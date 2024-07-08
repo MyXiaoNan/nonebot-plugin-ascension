@@ -25,3 +25,8 @@ _✨ 欢迎来到修真界 ✨_
 
 NoneBot2 修真插件
 
+
+## 👥 贡献
+
+请参阅 [贡献指南](./.github/CONTRIBUTING.md)
+
