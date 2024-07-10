@@ -23,7 +23,7 @@ async def check_resource():
         DATA_DIR.mkdir(parents=True, exist_ok=True)
 
     logger.info("正在检查资源完整性")
-    if not (DATA_DIR.is_dir() and len(list(DATA_DIR.rglob("*"))) >= 193):
+    if not DATA_DIR.is_dir():
         try:
             async with httpx.AsyncClient(timeout=10.0).stream(
                 "GET",
