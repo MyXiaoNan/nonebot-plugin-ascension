@@ -1,9 +1,15 @@
 from nonebot import require, get_driver
 from nonebot.plugin import PluginMetadata, inherit_supported_adapters
 
+require("nonebot_plugin_orm")
 require("nonebot_plugin_alconna")
 
 from .config import Config
+from .models import Buff as Buff
+from .models import Sect as Sect
+from .models import User as User
+from .models import UserCD as UserCD
+from .models import Backpack as Backpack
 from .utils.resource import check_resource
 
 __plugin_meta__ = PluginMetadata(
