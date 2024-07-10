@@ -9,11 +9,6 @@ DATA_DIR = BOT_DIR / "data" / "ascension"
 """数据保存目录"""
 
 
-for name, var in locals().copy().items():
-    if name.endswith("_DIR") and isinstance(var, Path):
-        var.mkdir(parents=True, exist_ok=True)
-
-
 class ScopeConfig(BaseModel):
     # 基础
     send_with_image: bool = True

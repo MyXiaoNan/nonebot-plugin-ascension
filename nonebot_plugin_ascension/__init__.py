@@ -1,9 +1,10 @@
-from nonebot import require
+from nonebot import require, get_driver
 from nonebot.plugin import PluginMetadata, inherit_supported_adapters
 
 require("nonebot_plugin_alconna")
 
 from .config import Config
+from .utils.resource import check_resource
 
 __plugin_meta__ = PluginMetadata(
     name="羽化登仙",
@@ -19,3 +20,10 @@ __plugin_meta__ = PluginMetadata(
         "version": "0.1.0",
     },
 )
+
+driver = get_driver()
+
+
+@driver.on_startup
+async def check_res_integrity():
+    await check_resource()
