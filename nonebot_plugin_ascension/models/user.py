@@ -87,6 +87,10 @@ class User(Model):
     """洞天福地标志"""
     create_time: Mapped[DateTime] = mapped_column(DateTime, default=func.now())
     """创建时间"""
+    last_check_time: Mapped[DateTime] = mapped_column(
+        DateTime, default=func.now(), onupdate=func.now()
+    )
+    """上次检查时间"""
 
 
 class UserCD(Model):
@@ -102,5 +106,3 @@ class UserCD(Model):
     """创建时间"""
     scheduled_time: Mapped[int | None]
     """计划时间"""
-    last_check_time: Mapped[int | None]
-    """上次检查时间"""
