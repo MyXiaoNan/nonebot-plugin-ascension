@@ -4,13 +4,12 @@ from nonebot.plugin import PluginMetadata, inherit_supported_adapters
 require("nonebot_plugin_orm")
 require("nonebot_plugin_alconna")
 
-from nonebot_plugin_ascension.models import Buff as Buff
-from nonebot_plugin_ascension.models import Sect as Sect
-from nonebot_plugin_ascension.models import User as User
-from nonebot_plugin_ascension.models import UserCD as UserCD
-from nonebot_plugin_ascension.models import Backpack as Backpack
-
 from .config import Config
+from .models import Buff as Buff
+from .models import Sect as Sect
+from .models import User as User
+from .models import UserCD as UserCD
+from .models import Backpack as Backpack
 from .utils.resource import check_resource
 
 __plugin_meta__ = PluginMetadata(
