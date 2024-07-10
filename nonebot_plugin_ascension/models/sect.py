@@ -14,13 +14,13 @@ class Sect(Model):
     sect_owner: Mapped[str]
     """宗主 ID"""
     sect_scale: Mapped[int | None]
-    """宗门规模"""
+    """宗门建设度"""
     sect_stone_amount: Mapped[int]
     """灵石储备"""
     sect_fairyland: Mapped[int | None]
     """洞天福地"""
     sect_materials: Mapped[int]
-    """材料"""
+    """宗门资材"""
     main_buff: Mapped[str | None]
     """宗门功法"""
     sec_buff: Mapped[str | None]
