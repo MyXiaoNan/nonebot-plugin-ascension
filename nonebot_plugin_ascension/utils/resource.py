@@ -31,7 +31,7 @@ async def check_resource():
                 follow_redirects=True,
             ) as response:
                 logger.info("开始下载资源文件")
-                async with aiofiles.open(DATA_DIR / "修仙资源.zip", "wb") as wf:
+                async with aiofiles.open(DATA_DIR / "resources.zip", "wb") as wf:
                     total: int = int(response.headers["Content-Length"])
                     with Progress(
                         TextColumn(DATA_DIR.name),
@@ -48,8 +48,8 @@ async def check_resource():
                                 download_task,
                                 completed=response.num_bytes_downloaded,
                             )
-            zipfile.ZipFile(DATA_DIR / "修仙资源.zip").extractall(DATA_DIR)
-            (DATA_DIR / "修仙资源.zip").unlink()
+            zipfile.ZipFile(DATA_DIR / "resources.zip").extractall(DATA_DIR)
+            (DATA_DIR / "resources.zip").unlink()
             logger.success("资源下载完成")
         except httpx.ReadTimeout:
             logger.warning("下载超时")
