@@ -56,8 +56,11 @@ class User(Model):
     sect_position: Mapped[str | None]
     """宗门职务"""
     sect_task: Mapped[int] = mapped_column(default=0)
+    """宗门任务"""
     sect_contribution: Mapped[int] = mapped_column(default=0)
+    """宗门贡献"""
     sect_elixir_get: Mapped[int] = mapped_column(default=0)
+    """宗门丹药获取"""
     is_sign: Mapped[Boolean] = mapped_column(Boolean, default=False)
     """是否签到"""
     is_beg: Mapped[Boolean] = mapped_column(Boolean, default=False)
@@ -68,15 +71,20 @@ class User(Model):
     """突破 CD（单位：分钟）"""
     level_up_rate: Mapped[int | None]
     """突破概率"""
-    work_num: Mapped[int] = mapped_column(default=0)
+    work_refresh_times: Mapped[int] = mapped_column(default=0)
+    """悬赏令刷新次数"""
     hp: Mapped[int] = mapped_column(default=0)
+    """生命值"""
     mp: Mapped[int] = mapped_column(default=0)
+    """真元"""
     atk: Mapped[int] = mapped_column(default=0)
     """攻击力"""
     atk_practice: Mapped[int] = mapped_column(default=0)
+    """攻击修炼等级"""
     blessed_spot_name: Mapped[str | None]
-    """洞天福地鸣潮"""
+    """洞天福地名称"""
     blessed_spot_flag: Mapped[int] = mapped_column(default=0)
+    """洞天福地标志"""
     create_time: Mapped[DateTime] = mapped_column(DateTime, default=func.now())
     """创建时间"""
 
