@@ -5,7 +5,18 @@
 groups = ["default", "dev", "adapters"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:d5c12baf98add25f0e0efd28bccd9d082547f1285a0a05cc9cb65e5adcc73df1"
+content_hash = "sha256:226e1958e6c0e269793674e5bab6a3125806f7ab71b20b7a58ea776006697332"
+
+[[package]]
+name = "aiofiles"
+version = "24.1.0"
+requires_python = ">=3.8"
+summary = "File support for asyncio."
+groups = ["default"]
+files = [
+    {file = "aiofiles-24.1.0-py3-none-any.whl", hash = "sha256:b4ec55f4195e3eb5d7abd1bf7e061763e864dd4954231fb8539a0ef8bb8260e5"},
+    {file = "aiofiles-24.1.0.tar.gz", hash = "sha256:22a075c9e5a3810f0c2e48f3008c94d68c65d763b9b03857924c99e57355166c"},
+]
 
 [[package]]
 name = "annotated-types"
