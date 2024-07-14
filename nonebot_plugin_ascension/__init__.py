@@ -1,8 +1,11 @@
 from nonebot import require, get_driver
-from nonebot.plugin import PluginMetadata, inherit_supported_adapters
+from nonebot.plugin import PluginMetadata, get_plugin_config, inherit_supported_adapters
 
 require("nonebot_plugin_orm")
+require("nonebot_plugin_waiter")
 require("nonebot_plugin_alconna")
+require("nonebot_plugin_userinfo")
+require("nonebot_plugin_htmlrender")
 
 from .config import Config
 from .models import Buff as Buff
@@ -28,6 +31,8 @@ __plugin_meta__ = PluginMetadata(
 )
 
 driver = get_driver()
+
+config = get_plugin_config(Config)
 
 
 @driver.on_startup
