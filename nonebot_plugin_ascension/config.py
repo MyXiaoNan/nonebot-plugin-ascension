@@ -7,6 +7,8 @@ BOT_DIR = Path.cwd()
 
 DATA_DIR = BOT_DIR / "data" / "ascension"
 """数据保存目录"""
+TEMPLATE_DIR = Path(__file__).parent / "templates"
+"""模板保存目录"""
 
 
 class ScopeConfig(BaseModel):
