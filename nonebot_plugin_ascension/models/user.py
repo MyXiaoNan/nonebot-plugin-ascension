@@ -1,14 +1,10 @@
 from enum import Enum
+from typing_extensions import Self
 
-from nonebot.adapters import Event
-from nonebot.params import Depends
-from nonebot_plugin_orm import Model
-from sqlalchemy import Boolean, DateTime, func
+from nonebot.internal.adapter import Event
 from sqlalchemy.orm import Mapped, mapped_column
-
-
-def get_user_id(event: Event) -> str:
-    return event.get_user_id()
+from nonebot_plugin_orm import Model, get_session
+from sqlalchemy import String, Boolean, DateTime, func
 
 
 class UserStatus(Enum):
@@ -31,12 +27,12 @@ class User(Model):
 
     __tablename__ = "user"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    """ID"""
-    user_id: Mapped[str] = Depends(get_user_id)
+    user_id: Mapped[str] = mapped_column(primary_key=True)
     """用户 ID"""
-    user_name: Mapped[str]
+    user_name: Mapped[str] = mapped_column(String(15), unique=True)
     """用户名"""
+    user_title: Mapped[str | None]
+    """称号"""
     root: Mapped[str]
     """灵根"""
     root_type: Mapped[str]
@@ -67,7 +63,7 @@ class User(Model):
     """是否参与仙途奇缘"""
     is_ban: Mapped[Boolean] = mapped_column(Boolean, default=False)
     """是否被禁"""
-    level_up_cd: Mapped[int | None]
+    level_up_cd: Mapped[DateTime | None] = mapped_column(DateTime)
     """突破 CD（单位：分钟）"""
     level_up_rate: Mapped[int | None]
     """突破概率"""
@@ -91,6 +87,38 @@ class User(Model):
         DateTime, default=func.now(), onupdate=func.now()
     )
     """上次检查时间"""
+
+    @classmethod
+    async def create_user(cls, user: Self):
+        """创建用户"""
+        session = get_session()
+        async with session.begin():
+            session.add(user)
+
+    @classmethod
+    async def delete_user(cls, user: Self):
+        """删除用户"""
+        session = get_session()
+        async with session.begin():
+            await session.delete(user)
+
+    @classmethod
+    async def get_user_info(cls, event: Event) -> Self | None:
+        """获取用户信息"""
+        session = get_session()
+        async with session.begin():
+            user = await session.get(User, event.get_user_id())
+            return user
+
+    @classmethod
+    async def is_user_exist(cls, user_id: str) -> bool:
+        """判断用户是否存在"""
+        session = get_session()
+        async with session.begin():
+            user = await session.get(User, user_id)
+            if not user:
+                return False
+            return True
 
 
 class UserCD(Model):

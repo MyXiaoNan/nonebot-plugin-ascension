@@ -1,5 +1,8 @@
-from nonebot_plugin_orm import Model
+from typing_extensions import Self
+
+from nonebot.internal.adapter import Event
 from sqlalchemy.orm import Mapped, mapped_column
+from nonebot_plugin_orm import Model, get_session
 
 
 class Buff(Model):
@@ -23,3 +26,11 @@ class Buff(Model):
     """攻击加成"""
     blessed_spot: Mapped[int] = mapped_column(default=0)
     """洞天福地"""
+
+    @classmethod
+    async def get_buff_info(cls, event: Event) -> Self | None:
+        """获取 Buff 信息"""
+        session = get_session()
+        async with session.begin():
+            buff = await session.get(Buff, event.get_user_id())
+            return buff
