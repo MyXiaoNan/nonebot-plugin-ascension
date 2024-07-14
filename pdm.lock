@@ -5,7 +5,7 @@
 groups = ["default", "dev", "adapters"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:6abf76bf8eddc0e1f5bc860700eadc5f3cc38109ecbc2867ebaf266c8024d1a4"
+content_hash = "sha256:b1d4c3d69f3a0986b4440bd0cce85c54f941d0a29e27a44761d285822493f944"
 
 [[package]]
 name = "aiofiles"
@@ -64,7 +64,7 @@ name = "anyio"
 version = "4.4.0"
 requires_python = ">=3.8"
 summary = "High level compatibility layer for multiple asynchronous event loop implementations"
-groups = ["default"]
+groups = ["adapters", "default"]
 dependencies = [
     "exceptiongroup>=1.0.2; python_version < \"3.11\"",
     "idna>=2.8",
@@ -137,6 +137,17 @@ files = [
     {file = "black-24.4.2-cp312-cp312-win_amd64.whl", hash = "sha256:415e686e87dbbe6f4cd5ef0fbf764af7b89f9057b97c908742b6008cc554b9c0"},
     {file = "black-24.4.2-py3-none-any.whl", hash = "sha256:d36ed1124bb81b32f8614555b34cc4259c3fbc7eec17870e8ff8ded335b58d8c"},
     {file = "black-24.4.2.tar.gz", hash = "sha256:c872b53057f000085da66a19c55d68f6f8ddcac2642392ad3a355878406fbd4d"},
+]
+
+[[package]]
+name = "cachetools"
+version = "5.3.3"
+requires_python = ">=3.7"
+summary = "Extensible memoizing collections and decorators"
+groups = ["default"]
+files = [
+    {file = "cachetools-5.3.3-py3-none-any.whl", hash = "sha256:0abad1021d3f8325b2fc1d2e9c8b9c9d57b04c3932657a72465447332c24d945"},
+    {file = "cachetools-5.3.3.tar.gz", hash = "sha256:ba29e2dfa0b8b556606f097407ed1aa62080ee108ab0dc5ec9d6a723a007d105"},
 ]
 
 [[package]]
@@ -224,11 +235,25 @@ files = [
 ]
 
 [[package]]
+name = "emoji"
+version = "2.12.1"
+requires_python = ">=3.7"
+summary = "Emoji for Python"
+groups = ["default"]
+dependencies = [
+    "typing-extensions>=4.7.0",
+]
+files = [
+    {file = "emoji-2.12.1-py3-none-any.whl", hash = "sha256:a00d62173bdadc2510967a381810101624a2f0986145b8da0cffa42e29430235"},
+    {file = "emoji-2.12.1.tar.gz", hash = "sha256:4aa0488817691aa58d83764b6c209f8a27c0b3ab3f89d1b8dceca1a62e4973eb"},
+]
+
+[[package]]
 name = "exceptiongroup"
 version = "1.2.1"
 requires_python = ">=3.7"
 summary = "Backport of PEP 654 (exception groups)"
-groups = ["default"]
+groups = ["adapters", "default"]
 marker = "python_version < \"3.11\""
 files = [
     {file = "exceptiongroup-1.2.1-py3-none-any.whl", hash = "sha256:5258b9ed329c5bbdd31a309f53cbfb0b155341807f6ff7606a1e801a891b29ad"},
@@ -499,6 +524,17 @@ files = [
 ]
 
 [[package]]
+name = "markdown"
+version = "3.6"
+requires_python = ">=3.8"
+summary = "Python implementation of John Gruber's Markdown."
+groups = ["default"]
+files = [
+    {file = "Markdown-3.6-py3-none-any.whl", hash = "sha256:48f276f4d8cfb8ce6527c8f79e2ee29708508bf4d40aa410fbc3b4ee832c850f"},
+    {file = "Markdown-3.6.tar.gz", hash = "sha256:ed4f41f6daecbeeb96e576ce414c41d2d876daa9a16cb35fa8ed8c2ddfad0224"},
+]
+
+[[package]]
 name = "markdown-it-py"
 version = "3.0.0"
 requires_python = ">=3.8"
@@ -717,6 +753,22 @@ files = [
 ]
 
 [[package]]
+name = "nonebot-adapter-telegram"
+version = "0.1.0b17"
+requires_python = ">=3.8,<4.0"
+summary = "Telegram Adapter for NoneBot2"
+groups = ["adapters"]
+dependencies = [
+    "anyio<5.0.0,>=4.2.0",
+    "nonebot2<3.0.0,>=2.1.3",
+    "pydantic!=2.5.0,!=2.5.1,<3.0.0,>=2.0.3",
+]
+files = [
+    {file = "nonebot-adapter-telegram-0.1.0b17.tar.gz", hash = "sha256:0914b07e24d6a747a53426b4f8ae799c753a70b703242943f0421f8dee3e5f03"},
+    {file = "nonebot_adapter_telegram-0.1.0b17-py3-none-any.whl", hash = "sha256:4ff41a9a8ce828e229ffa7e192a82ea228ac60ae20abeeacbfd8244c6b71ecf8"},
+]
+
+[[package]]
 name = "nonebot-plugin-alconna"
 version = "0.49.0"
 requires_python = ">=3.9"
@@ -734,6 +786,27 @@ dependencies = [
 files = [
     {file = "nonebot_plugin_alconna-0.49.0-py3-none-any.whl", hash = "sha256:a9733a37c521373d9dd71752ab0e9cd2338c385ef9871c8e3f2ad178b2f1668f"},
     {file = "nonebot_plugin_alconna-0.49.0.tar.gz", hash = "sha256:5060819b76d05c24d944e17b6a10de52e8821063d15220ab65083cda97c05706"},
+]
+
+[[package]]
+name = "nonebot-plugin-htmlrender"
+version = "0.3.3"
+requires_python = "<4.0,>=3.9"
+summary = "通过浏览器渲染图片"
+groups = ["default"]
+dependencies = [
+    "Pygments>=2.10.0",
+    "aiofiles>=0.8.0",
+    "jinja2>=3.0.3",
+    "markdown>=3.3.6",
+    "nonebot2>=2.2.0",
+    "playwright>=1.17.2",
+    "pymdown-extensions>=9.1",
+    "python-markdown-math>=0.8",
+]
+files = [
+    {file = "nonebot_plugin_htmlrender-0.3.3-py3-none-any.whl", hash = "sha256:2ac871d345c94103aa630153e007caa6319b5f5468491347513d746ba98b70d7"},
+    {file = "nonebot_plugin_htmlrender-0.3.3.tar.gz", hash = "sha256:ab46ecc6dbd102628af8f88437fdc24da11839487950d07d0c5fd8db0db98ae8"},
 ]
 
 [[package]]
@@ -786,6 +859,24 @@ dependencies = [
 files = [
     {file = "nonebot_plugin_orm-0.7.4-py3-none-any.whl", hash = "sha256:e2d3f3ba6b7bf22236b9481015cbc13b184f22450fe7abe2f7a65ed128bf2d9e"},
     {file = "nonebot_plugin_orm-0.7.4.tar.gz", hash = "sha256:67ff5f358249bd9413d958ad002dea1749eb2530e1038f633c1dd044dd5816f3"},
+]
+
+[[package]]
+name = "nonebot-plugin-userinfo"
+version = "0.2.4"
+requires_python = "<4.0,>=3.8"
+summary = "Nonebot2 用户信息获取插件"
+groups = ["default"]
+dependencies = [
+    "cachetools<6.0.0,>=5.0.0",
+    "emoji<3.0.0,>=2.0.0",
+    "httpx<1.0.0,>=0.20.0",
+    "nonebot2<3.0.0,>=2.0.0",
+    "strenum<0.5.0,>=0.4.8",
+]
+files = [
+    {file = "nonebot_plugin_userinfo-0.2.4-py3-none-any.whl", hash = "sha256:f08dac58759b859f8bf1d1c17e96cdcee92b10613631a430405364a40181f9e4"},
+    {file = "nonebot_plugin_userinfo-0.2.4.tar.gz", hash = "sha256:1d49ff00ce38c856be4388fc2a954656f07cc529ce38ef9593e3a0ea40f26b6a"},
 ]
 
 [[package]]
@@ -913,6 +1004,26 @@ files = [
 ]
 
 [[package]]
+name = "playwright"
+version = "1.45.0"
+requires_python = ">=3.8"
+summary = "A high-level API to automate web browsers"
+groups = ["default"]
+dependencies = [
+    "greenlet==3.0.3",
+    "pyee==11.1.0",
+]
+files = [
+    {file = "playwright-1.45.0-py3-none-macosx_10_13_x86_64.whl", hash = "sha256:7d49aee5907d8e72060f04bc299cb6851c2dc44cb227540ade89d7aa529e907a"},
+    {file = "playwright-1.45.0-py3-none-macosx_11_0_arm64.whl", hash = "sha256:210c9f848820f58b5b5ed48047748620b780ca3acc3e2b7560dafb2bfdd6d90a"},
+    {file = "playwright-1.45.0-py3-none-macosx_11_0_universal2.whl", hash = "sha256:13b5398831f5499580e819ddc996633446a93bf88029e89451e51da188e16ae3"},
+    {file = "playwright-1.45.0-py3-none-manylinux1_x86_64.whl", hash = "sha256:0ba5a39f25fb9b9cf1bd48678f44536a29f6d83376329de2dee1567dac220afe"},
+    {file = "playwright-1.45.0-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b09fa76614ba2926d45a4c0581f710c13652d5e32290ba6a1490fbafff7f0be8"},
+    {file = "playwright-1.45.0-py3-none-win32.whl", hash = "sha256:97a7d53af89af54208b69c051046b462675fcf5b93f7fbfb7c0fa7f813424ee2"},
+    {file = "playwright-1.45.0-py3-none-win_amd64.whl", hash = "sha256:701db496928429aec103739e48e3110806bd5cf49456cc95b89f28e1abda71da"},
+]
+
+[[package]]
 name = "pre-commit"
 version = "3.7.1"
 requires_python = ">=3.9"
@@ -1025,6 +1136,20 @@ files = [
 ]
 
 [[package]]
+name = "pyee"
+version = "11.1.0"
+requires_python = ">=3.8"
+summary = "A rough port of Node.js's EventEmitter to Python with a few tricks of its own"
+groups = ["default"]
+dependencies = [
+    "typing-extensions",
+]
+files = [
+    {file = "pyee-11.1.0-py3-none-any.whl", hash = "sha256:5d346a7d0f861a4b2e6c47960295bd895f816725b27d656181947346be98d7c1"},
+    {file = "pyee-11.1.0.tar.gz", hash = "sha256:b53af98f6990c810edd9b56b87791021a8f54fd13db4edd1142438d44ba2263f"},
+]
+
+[[package]]
 name = "pygments"
 version = "2.18.0"
 requires_python = ">=3.8"
@@ -1046,6 +1171,21 @@ files = [
 ]
 
 [[package]]
+name = "pymdown-extensions"
+version = "10.8.1"
+requires_python = ">=3.8"
+summary = "Extension pack for Python Markdown."
+groups = ["default"]
+dependencies = [
+    "markdown>=3.6",
+    "pyyaml",
+]
+files = [
+    {file = "pymdown_extensions-10.8.1-py3-none-any.whl", hash = "sha256:f938326115884f48c6059c67377c46cf631c733ef3629b6eed1349989d1b30cb"},
+    {file = "pymdown_extensions-10.8.1.tar.gz", hash = "sha256:3ab1db5c9e21728dabf75192d71471f8e50f216627e9a1fa9535ecb0231b9940"},
+]
+
+[[package]]
 name = "python-dotenv"
 version = "1.0.1"
 requires_python = ">=3.8"
@@ -1054,6 +1194,20 @@ groups = ["adapters", "default"]
 files = [
     {file = "python-dotenv-1.0.1.tar.gz", hash = "sha256:e324ee90a023d808f1959c46bcbc04446a10ced277783dc6ee09987c37ec10ca"},
     {file = "python_dotenv-1.0.1-py3-none-any.whl", hash = "sha256:f7b63ef50f1b690dddf550d03497b66d609393b40b564ed0d674909a68ebf16a"},
+]
+
+[[package]]
+name = "python-markdown-math"
+version = "0.8"
+requires_python = ">=3.6"
+summary = "Math extension for Python-Markdown"
+groups = ["default"]
+dependencies = [
+    "Markdown>=3.0",
+]
+files = [
+    {file = "python-markdown-math-0.8.tar.gz", hash = "sha256:8564212af679fc18d53f38681f16080fcd3d186073f23825c7ce86fadd3e3635"},
+    {file = "python_markdown_math-0.8-py3-none-any.whl", hash = "sha256:c685249d84b5b697e9114d7beb352bd8ca2e07fd268fd4057ffca888c14641e5"},
 ]
 
 [[package]]
@@ -1158,7 +1312,7 @@ name = "sniffio"
 version = "1.3.1"
 requires_python = ">=3.7"
 summary = "Sniff out which async library your code is running under"
-groups = ["default"]
+groups = ["adapters", "default"]
 files = [
     {file = "sniffio-1.3.1-py3-none-any.whl", hash = "sha256:2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2"},
     {file = "sniffio-1.3.1.tar.gz", hash = "sha256:f4324edc670a0f49750a81b895f35c3adb843cca46f0530f79fc1babb23789dc"},
@@ -1257,6 +1411,16 @@ dependencies = [
 files = [
     {file = "starlette-0.37.2-py3-none-any.whl", hash = "sha256:6fe59f29268538e5d0d182f2791a479a0c64638e6935d1c6989e63fb2699c6ee"},
     {file = "starlette-0.37.2.tar.gz", hash = "sha256:9af890290133b79fc3db55474ade20f6220a364a0402e0b556e7cd5e1e093823"},
+]
+
+[[package]]
+name = "strenum"
+version = "0.4.15"
+summary = "An Enum that inherits from str."
+groups = ["default"]
+files = [
+    {file = "StrEnum-0.4.15-py3-none-any.whl", hash = "sha256:a30cda4af7cc6b5bf52c8055bc4bf4b2b6b14a93b574626da33df53cf7740659"},
+    {file = "StrEnum-0.4.15.tar.gz", hash = "sha256:878fb5ab705442070e4dd1929bb5e2249511c0bcf2b0eeacf3bcd80875c82eff"},
 ]
 
 [[package]]
