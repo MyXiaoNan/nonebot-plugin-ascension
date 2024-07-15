@@ -26,7 +26,7 @@ async def _(user_info: UserInfo = EventUserInfo()):
 
     root_data = jsondata.get_all_root_data()
     root, root_type = jsondata.select_root()
-    power: int = int(100 * float(root_data[root_type]["type_speeds"]))
+    power: int = int(100 * float(root_data[root_type].type_speeds))
 
     user = User(
         user_id=user_id,
@@ -62,7 +62,7 @@ async def _(event: Event, session: async_scoped_session):
 
     root_data = jsondata.get_all_root_data()
     root, root_type = jsondata.select_root()
-    power: int = int(100 * float(root_data[root_type]["type_speeds"]))
+    power: int = int(100 * float(root_data[root_type].type_speeds))
 
     user = User(
         user_id=user_info.user_id,

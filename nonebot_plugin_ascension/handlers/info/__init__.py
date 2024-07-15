@@ -27,10 +27,13 @@ async def _(
         ).finish(at_sender=True)
 
     # Avatar
-    user_avatar_bytes: bytes = await user.user_avatar.get_image()
-    user_avatar_base64: str = "data:image/png;base64," + base64.b64encode(
-        user_avatar_bytes
-    ).decode("utf-8")
+    if user.user_avatar:
+        user_avatar_bytes: bytes = await user.user_avatar.get_image()
+        user_avatar: str = "data:image/png;base64," + base64.b64encode(
+            user_avatar_bytes
+        ).decode("utf-8")
+    else:
+        user_avatar: str = "https://avatars.githubusercontent.com/u/170725170?s=200&v=4"
 
     # Level Up Info
     level_rate = jsondata.get_level_data(user_info.level).spend
@@ -87,8 +90,8 @@ async def _(
 
     # Sect Info
     sect_id = user_info.sect_id
-    if sect_id:
-        sect_info = await session.get(Sect, user_info.sect_id)
+    sect_info = await session.get(Sect, sect_id)
+    if sect_id and sect_info:
         sect_name = sect_info.sect_name
         sect_position = user_info.sect_position
     else:
@@ -131,7 +134,7 @@ async def _(
     )
 
     info_map = {
-        "avatar": user_avatar_base64,
+        "avatar": user_avatar,
         "title": user_info.user_title if user_info.user_title else "暂无",
         "name": user_info.user_name,
         "level": user_info.level,

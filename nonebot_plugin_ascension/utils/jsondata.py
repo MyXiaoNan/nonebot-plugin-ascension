@@ -98,10 +98,10 @@ class JsonData:
     def select_root(self) -> tuple[str, str]:
         data = self.get_all_root_data()
         root_types: list[str] = list(data.keys())
-        root_rate = [data[root_type]["type_rate"] for root_type in root_types]
+        root_rate = [data[root_type].type_rate for root_type in root_types]
 
         select_root_type: str = random.choices(root_types, weights=root_rate, k=1)[0]
-        select_root: str = random.choice(data[select_root_type]["type_list"])
+        select_root: str = random.choice(data[select_root_type].type_list)
 
         return select_root, select_root_type
 

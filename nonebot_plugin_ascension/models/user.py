@@ -1,7 +1,6 @@
 from enum import Enum
 from typing_extensions import Self
 
-from nonebot.internal.adapter import Event
 from sqlalchemy.orm import Mapped, mapped_column
 from nonebot_plugin_orm import Model, get_session
 from sqlalchemy import String, Boolean, DateTime, func
@@ -57,11 +56,11 @@ class User(Model):
     """宗门贡献"""
     sect_elixir_get: Mapped[int] = mapped_column(default=0)
     """宗门丹药获取"""
-    is_sign: Mapped[Boolean] = mapped_column(Boolean, default=False)
+    is_sign: Mapped[bool] = mapped_column(Boolean, default=False)
     """是否签到"""
-    is_beg: Mapped[Boolean] = mapped_column(Boolean, default=False)
+    is_beg: Mapped[bool] = mapped_column(Boolean, default=False)
     """是否参与仙途奇缘"""
-    is_ban: Mapped[Boolean] = mapped_column(Boolean, default=False)
+    is_ban: Mapped[bool] = mapped_column(Boolean, default=False)
     """是否被禁"""
     level_up_cd: Mapped[DateTime | None] = mapped_column(DateTime)
     """突破 CD（单位：分钟）"""
@@ -101,14 +100,6 @@ class User(Model):
         session = get_session()
         async with session.begin():
             await session.delete(user)
-
-    @classmethod
-    async def get_user_info(cls, event: Event) -> Self | None:
-        """获取用户信息"""
-        session = get_session()
-        async with session.begin():
-            user = await session.get(User, event.get_user_id())
-            return user
 
     @classmethod
     async def is_user_exist(cls, user_id: str) -> bool:
