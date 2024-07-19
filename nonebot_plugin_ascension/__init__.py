@@ -17,6 +17,7 @@ from .handlers import info as info
 from .models import UserCD as UserCD
 from .models import Backpack as Backpack
 from .utils.resource import check_resource
+from .extension import text_to_pic as text_to_pic
 
 __plugin_meta__ = PluginMetadata(
     name="羽化登仙",
