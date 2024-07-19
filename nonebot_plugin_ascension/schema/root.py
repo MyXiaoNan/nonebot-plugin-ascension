@@ -7,4 +7,4 @@ class RootType(BaseModel):
     type_rate: int
     type_list: list[str]
     type_speeds: float
-    type_flag: list[str | None]
+    type_flag: list[int | None]

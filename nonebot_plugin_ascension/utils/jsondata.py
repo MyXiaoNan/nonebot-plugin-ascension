@@ -48,14 +48,16 @@ class JsonData:
         if level == "-1":
             all_level_name: list = list(self._get_level_data().keys())
             last_level_name: str = all_level_name[-1]
-            return LevelInfo.parse_obj(self._get_level_data()[last_level_name])
-        return LevelInfo.parse_obj(self._get_level_data()[level])
+            return LevelInfo.model_validate(self._get_level_data()[last_level_name])
+        return LevelInfo.model_validate(self._get_level_data()[level])
 
     def get_next_level_data(self, level: str) -> LevelInfo:
         """获取用户下一境界数据"""
         all_level_name = list(self._get_level_data().keys())
         level_index = all_level_name.index(level)
-        return LevelInfo.parse_obj(self.get_level_data(all_level_name[level_index + 1]))
+        return LevelInfo.model_validate(
+            self.get_level_data(all_level_name[level_index + 1])
+        )
 
     def get_all_root_data(self) -> dict[str, RootType]:
         """获取全部灵根数据"""
@@ -63,45 +65,50 @@ class JsonData:
 
     def get_root_data(self, name: str) -> RootType:
         """获取灵根数据"""
-        return RootType.parse_obj(self.get_all_root_data()[name])
+        return RootType.model_validate(self.get_all_root_data()[name])
 
     def get_mainbuff_data(self, key: str | int) -> MainBuff:
         """获取功法数据"""
-        return MainBuff.parse_obj(
+        return MainBuff.model_validate(
             json.loads(self.mainbuff_path.read_text("utf-8"))[str(key)]
         )
 
     def get_secbuff_data(self, key: str | int) -> SecBuff:
         """获取神通数据"""
-        return SecBuff.parse_obj(
+        return SecBuff.model_validate(
             json.loads(self.secbuff_path.read_text("utf-8"))[str(key)]
         )
 
     def get_subuff_data(self, key: str | int) -> SubBuff:
         """获取辅修数据"""
-        return SubBuff.parse_obj(
+        return SubBuff.model_validate(
             json.loads(self.subuff_path.read_text("utf-8"))[str(key)]
         )
 
     def get_dharma_data(self, key: str | int) -> DharmaBuff:
         """获取法器数据"""
-        return DharmaBuff.parse_obj(
+        return DharmaBuff.model_validate(
             json.loads(self.dharma_path.read_text("utf-8"))[str(key)]
         )
 
     def get_armor_data(self, key: str | int) -> ArmorBuff:
         """获取防具数据"""
-        return ArmorBuff.parse_obj(
+        return ArmorBuff.model_validate(
             json.loads(self.armor_path.read_text("utf-8"))[str(key)]
         )
 
     def select_root(self) -> tuple[str, str]:
         data = self.get_all_root_data()
         root_types: list[str] = list(data.keys())
-        root_rate = [data[root_type].type_rate for root_type in root_types]
+        root_rate = [
+            RootType.model_validate(data[root_type]).type_rate
+            for root_type in root_types
+        ]
 
         select_root_type: str = random.choices(root_types, weights=root_rate, k=1)[0]
-        select_root: str = random.choice(data[select_root_type].type_list)
+        select_root: str = random.choice(
+            RootType.model_validate(data[select_root_type]).type_list
+        )
 
         return select_root, select_root_type
 
