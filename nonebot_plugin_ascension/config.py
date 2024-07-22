@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from pydantic import Field, BaseModel
+from nonebot.plugin import get_plugin_config
 
 BOT_DIR = Path.cwd()
 """Bot 根目录"""
@@ -11,7 +12,7 @@ TEMPLATE_DIR = DATA_DIR / "templates"
 """模板保存目录"""
 
 
-class ScopeConfig(BaseModel):
+class ScopedConfig(BaseModel):
     # 基础
     send_with_image: bool = True
     """是否使用图片发送消息"""
@@ -78,5 +79,8 @@ class ScopeConfig(BaseModel):
 
 
 class Config(BaseModel):
-    ascension: ScopeConfig = Field(default_factory=ScopeConfig)
+    ascension: ScopedConfig = Field(default_factory=ScopedConfig)
     """Ascension Config"""
+
+
+config: ScopedConfig = get_plugin_config(Config).ascension

@@ -7,8 +7,8 @@ from nonebot_plugin_orm import async_scoped_session
 from nonebot_plugin_userinfo import UserInfo, EventUserInfo
 from nonebot_plugin_alconna import Match, Command, UniMessage
 
-from .. import config
 from ..models import User
+from ..config import config
 from ..schema import RootType
 from ..utils.jsondata import jsondata
 
@@ -60,7 +60,7 @@ async def _(event: Event, session: async_scoped_session):
             "修仙界没有你的足迹，输入 『 /我要修仙 』 加入修仙世界吧！"
         ).finish(at_sender=True)
 
-    if user_info.stone < config.ascension.rebirth_cost:
+    if user_info.stone < config.rebirth_cost:
         await UniMessage("你的灵石还不够呢，快去赚点灵石吧！").finish(at_sender=True)
 
     root_data = jsondata.get_all_root_data()
@@ -132,7 +132,7 @@ async def _(event: Event, session: async_scoped_session):
     if user_info.is_sign:
         await UniMessage("贪心的人是不会有好运的").finish(at_sender=True)
 
-    stone = random.randint(config.ascension.sign_in[0], config.ascension.sign_in[1])
+    stone = random.randint(config.sign_in[0], config.sign_in[1])
     user_info.stone += stone
     user_info.is_sign = True
     await session.commit()
