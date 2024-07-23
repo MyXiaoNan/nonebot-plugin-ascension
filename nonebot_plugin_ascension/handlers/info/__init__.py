@@ -1,8 +1,10 @@
 import base64
 
+from nonebot import logger
 from sqlalchemy import select
 from nonebot.internal.adapter import Event
 from nonebot_plugin_orm import async_scoped_session
+from nonebot_plugin_userinfo.exception import NetworkError
 from nonebot_plugin_userinfo import UserInfo, EventUserInfo
 from nonebot_plugin_alconna import Button, Command, UniMessage, FallbackStrategy
 
@@ -30,10 +32,16 @@ async def _(
 
     # Avatar
     if user.user_avatar:
-        user_avatar_bytes: bytes = await user.user_avatar.get_image()
-        user_avatar: str = "data:image/png;base64," + base64.b64encode(
-            user_avatar_bytes
-        ).decode("utf-8")
+        try:
+            user_avatar_bytes: bytes = await user.user_avatar.get_image()
+            user_avatar: str = "data:image/png;base64," + base64.b64encode(
+                user_avatar_bytes
+            ).decode("utf-8")
+        except NetworkError:
+            logger.debug("头像下载失败，使用默认头像")
+            user_avatar: str = (
+                "https://avatars.githubusercontent.com/u/170725170?s=200&v=4"
+            )
     else:
         user_avatar: str = "https://avatars.githubusercontent.com/u/170725170?s=200&v=4"
 
