@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from nonebot.internal.adapter import Event
 from nonebot_plugin_orm import async_scoped_session
 from nonebot_plugin_userinfo import UserInfo, EventUserInfo
-from nonebot_plugin_alconna import Match, Command, UniMessage
+from nonebot_plugin_alconna import Match, Button, Command, UniMessage, FallbackStrategy
 
 from ..models import User
 from ..config import config
@@ -46,8 +46,10 @@ async def _(user_info: UserInfo = EventUserInfo()):
         await UniMessage(
             f"欢迎来到修真界。你的灵根为：{root}，类型是：{root_type}。你的战力为：{power}。当前境界：江湖好手"
         ).finish(at_sender=True)
-    await UniMessage("你已迈入修仙世界，输入 『 /我的修仙信息 』查看信息吧").finish(
-        at_sender=True
+    await (
+        UniMessage.text("你已迈入修仙世界，输入 『 /我的修仙信息 』查看信息吧")
+        .keyboard(Button("input", "我的信息", text="/我的修仙信息"))
+        .finish(at_sender=True, fallback=FallbackStrategy.ignore)
     )
 
 
@@ -56,9 +58,11 @@ async def _(event: Event, session: async_scoped_session):
     user_info = await session.get(User, event.get_user_id())
 
     if user_info is None:
-        await UniMessage(
-            "修仙界没有你的足迹，输入 『 /我要修仙 』 加入修仙世界吧！"
-        ).finish(at_sender=True)
+        await (
+            UniMessage.text("修仙界没有你的足迹，输入 『 /我要修仙 』 加入修仙世界吧！")
+            .keyboard(Button("input", "我要修仙", text="/我要修仙"))
+            .finish(at_sender=True, fallback=FallbackStrategy.ignore)
+        )
 
     if user_info.stone < config.rebirth_cost:
         await UniMessage("你的灵石还不够呢，快去赚点灵石吧！").finish(at_sender=True)
@@ -89,9 +93,11 @@ async def _(event: Event, session: async_scoped_session):
 async def _(event: Event, name: Match[str], session: async_scoped_session):
     user_info = await session.get(User, event.get_user_id())
     if user_info is None:
-        await UniMessage(
-            "修仙界没有你的足迹，输入 『 /我要修仙 』 加入修仙世界吧！"
-        ).finish(at_sender=True)
+        await (
+            UniMessage.text("修仙界没有你的足迹，输入 『 /我要修仙 』 加入修仙世界吧！")
+            .keyboard(Button("input", "我要修仙", text="/我要修仙"))
+            .finish(at_sender=True, fallback=FallbackStrategy.ignore)
+        )
 
     if name.available:
         new_name = name.result
@@ -105,19 +111,35 @@ async def _(event: Event, name: Match[str], session: async_scoped_session):
         resp = await check.wait(timeout=30)
 
         if resp is None:
-            await UniMessage("等待超时，想好了再来喔").finish(at_sender=True)
+            await (
+                UniMessage.text("等待超时，想好了再来喔")
+                .keyboard(Button("input", "重试", text="/改名"))
+                .finish(at_sender=True, fallback=FallbackStrategy.ignore)
+            )
         if resp.isdigit():
-            await UniMessage("不能为纯数字，再想想吧").finish(at_sender=True)
+            await (
+                UniMessage.text("不能为纯数字，再想想吧")
+                .keyboard(Button("input", "重试", text="/改名"))
+                .finish(at_sender=True, fallback=FallbackStrategy.ignore)
+            )
         new_name = resp
 
     if len(new_name) >= 15:
-        await UniMessage("长度过长，请修改后重试！").finish(at_sender=True)
+        await (
+            UniMessage.text("长度过长，请修改后重试！")
+            .keyboard(Button("input", "重试", text="/改名"))
+            .finish(at_sender=True, fallback=FallbackStrategy.ignore)
+        )
 
     user_info.user_name = new_name
     try:
         await session.commit()
     except IntegrityError:
-        await UniMessage("已存在该道号！道友再想想别的吧").finish(at_sender=True)
+        await (
+            UniMessage.text("已存在该道号！道友再想想别的吧")
+            .keyboard(Button("input", "重试", text="/改名"))
+            .finish(at_sender=True, fallback=FallbackStrategy.ignore)
+        )
     await UniMessage("改名成功").finish(at_sender=True)
 
 
@@ -125,9 +147,11 @@ async def _(event: Event, name: Match[str], session: async_scoped_session):
 async def _(event: Event, session: async_scoped_session):
     user_info = await session.get(User, event.get_user_id())
     if user_info is None:
-        await UniMessage(
-            "修仙界没有你的足迹，输入 『 /我要修仙 』 加入修仙世界吧！"
-        ).finish(at_sender=True)
+        await (
+            UniMessage.text("修仙界没有你的足迹，输入 『 /我要修仙 』 加入修仙世界吧！")
+            .keyboard(Button("input", "我要修仙", text="/我要修仙"))
+            .finish(at_sender=True, fallback=FallbackStrategy.ignore)
+        )
 
     if user_info.is_sign:
         await UniMessage("贪心的人是不会有好运的").finish(at_sender=True)
@@ -143,8 +167,10 @@ async def _(event: Event, session: async_scoped_session):
 async def _(event: Event, session: async_scoped_session):
     user_info = await session.get(User, event.get_user_id())
     if user_info is None:
-        await UniMessage(
-            "修仙界没有你的足迹，输入 『 /我要修仙 』 加入修仙世界吧！"
-        ).finish(at_sender=True)
+        await (
+            UniMessage.text("修仙界没有你的足迹，输入 『 /我要修仙 』 加入修仙世界吧！")
+            .keyboard(Button("input", "我要修仙", text="/我要修仙"))
+            .finish(at_sender=True, fallback=FallbackStrategy.ignore)
+        )
 
     # TODO

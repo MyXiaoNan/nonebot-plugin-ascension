@@ -3,8 +3,8 @@ import base64
 from sqlalchemy import select
 from nonebot.internal.adapter import Event
 from nonebot_plugin_orm import async_scoped_session
-from nonebot_plugin_alconna import Command, UniMessage
 from nonebot_plugin_userinfo import UserInfo, EventUserInfo
+from nonebot_plugin_alconna import Button, Command, UniMessage, FallbackStrategy
 
 from nonebot_plugin_ascension.models import Buff, Sect, User
 from nonebot_plugin_ascension.utils.jsondata import jsondata
@@ -22,9 +22,11 @@ async def _(
     buff_info = await session.get(Buff, event.get_user_id())
 
     if user_info is None:
-        await UniMessage(
-            "修仙界没有你的足迹，输入 『 /我要修仙 』 加入修仙世界吧！"
-        ).finish(at_sender=True)
+        await (
+            UniMessage.text("修仙界没有你的足迹，输入 『 /我要修仙 』 加入修仙世界吧！")
+            .keyboard(Button("input", "我要修仙", text="/我要修仙"))
+            .finish(at_sender=True, fallback=FallbackStrategy.ignore)
+        )
 
     # Avatar
     if user.user_avatar:
