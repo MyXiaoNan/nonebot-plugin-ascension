@@ -7,7 +7,7 @@ authors = [
 ]
 dependencies = [
     "nonebot2[fastapi]>=2.3.2",
-    "nonebot-plugin-alconna>=0.50.0",
+    "nonebot-plugin-alconna>=0.50.2",
     "aiofiles>=24.1.0",
     "nonebot-plugin-orm[aiosqlite]>=0.7.5",
     "nonebot-plugin-userinfo>=0.2.4",
