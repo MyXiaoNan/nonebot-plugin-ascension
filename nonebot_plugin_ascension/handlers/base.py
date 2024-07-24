@@ -43,7 +43,28 @@ async def _(user_info: UserInfo = EventUserInfo()):
     )
 
     if not await User.is_user_exist(user_id, user_name):
-        await User.create_user(user)
+        try:
+            await User.create_user(user)
+        except IntegrityError:
+            await UniMessage(f"您的道号『 {user_name} 』已被占用，请输入新的道号").send(
+                at_sender=True
+            )
+
+            @waiter(waits=["message"], keep_session=True)
+            async def check(event: Event):
+                return event.get_plaintext()
+
+            new_name = await check.wait(timeout=30)
+
+            if new_name is None:
+                await (
+                    UniMessage.text("等待超时，想好了再来喔")
+                    .keyboard(Button("input", "重试", text="/我要修仙"))
+                    .finish(at_sender=True, fallback=FallbackStrategy.ignore)
+                )
+            user.user_name = new_name
+            await User.create_user(user)
+
         await UniMessage(
             f"欢迎来到修真界。你的灵根为：{root}，类型是：{root_type}。你的战力为：{power}。当前境界：江湖好手"
         ).finish(at_sender=True)
