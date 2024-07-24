@@ -26,7 +26,7 @@ class User(Model):
 
     __tablename__ = "user"
 
-    user_id: Mapped[str] = mapped_column(primary_key=True)
+    user_id: Mapped[str] = mapped_column(primary_key=True, unique=True)
     """用户 ID"""
     user_name: Mapped[str] = mapped_column(String(15), primary_key=True, unique=True)
     """用户名"""
