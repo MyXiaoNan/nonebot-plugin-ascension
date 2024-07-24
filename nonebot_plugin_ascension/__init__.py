@@ -7,6 +7,7 @@ require("nonebot_plugin_alconna")
 require("nonebot_plugin_userinfo")
 require("nonebot_plugin_htmlrender")
 
+from . import migrations
 from .config import Config
 from .models import Buff as Buff
 from .models import Sect as Sect
@@ -29,6 +30,7 @@ __plugin_meta__ = PluginMetadata(
     supported_adapters=inherit_supported_adapters("nonebot_plugin_alconna"),
     extra={
         "unique_name": "Ascension",
+        "orm_version_location": migrations,
         "author": "Komorebi <mute231010@gmail.com>",
         "version": "0.1.0",
     },
