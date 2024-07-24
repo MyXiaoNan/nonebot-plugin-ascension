@@ -12,8 +12,9 @@ from .config import Config
 from .models import Buff as Buff
 from .models import Sect as Sect
 from .models import User as User
+
+# from .handlers import buff as buff
 from .handlers import base as base
-from .handlers import buff as buff
 from .handlers import info as info
 from .models import UserCD as UserCD
 from .models import Backpack as Backpack
