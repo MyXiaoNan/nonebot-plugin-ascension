@@ -1,5 +1,6 @@
 import random
 
+from sqlalchemy import select
 from nonebot_plugin_waiter import waiter
 from sqlalchemy.exc import IntegrityError
 from nonebot.internal.adapter import Event
@@ -41,7 +42,7 @@ async def _(user_info: UserInfo = EventUserInfo()):
         power=power,
     )
 
-    if not await User.is_user_exist(user_id):
+    if not await User.is_user_exist(user_id, user_name):
         await User.create_user(user)
         await UniMessage(
             f"欢迎来到修真界。你的灵根为：{root}，类型是：{root_type}。你的战力为：{power}。当前境界：江湖好手"
@@ -90,8 +91,13 @@ async def _(event: Event, session: async_scoped_session):
 
 
 @rename.handle()
-async def _(event: Event, name: Match[str], session: async_scoped_session):
-    user_info = await session.get(User, event.get_user_id())
+async def _(
+    name: Match[str],
+    session: async_scoped_session,
+    event_user: UserInfo = EventUserInfo(),
+):
+    stmt = select(User).where(User.user_id == event_user.user_id)
+    user_info = (await session.execute(stmt)).scalar()
     if user_info is None:
         await (
             UniMessage.text("修仙界没有你的足迹，输入 『 /我要修仙 』 加入修仙世界吧！")
@@ -145,7 +151,8 @@ async def _(event: Event, name: Match[str], session: async_scoped_session):
 
 @sign_in.handle()
 async def _(event: Event, session: async_scoped_session):
-    user_info = await session.get(User, event.get_user_id())
+    stmt = select(User).where(User.user_id == event.get_user_id())
+    user_info = (await session.execute(stmt)).scalar()
     if user_info is None:
         await (
             UniMessage.text("修仙界没有你的足迹，输入 『 /我要修仙 』 加入修仙世界吧！")
@@ -165,7 +172,8 @@ async def _(event: Event, session: async_scoped_session):
 
 @level_up.handle()
 async def _(event: Event, session: async_scoped_session):
-    user_info = await session.get(User, event.get_user_id())
+    stmt = select(User).where(User.user_id == event.get_user_id())
+    user_info = (await session.execute(stmt)).scalar()
     if user_info is None:
         await (
             UniMessage.text("修仙界没有你的足迹，输入 『 /我要修仙 』 加入修仙世界吧！")

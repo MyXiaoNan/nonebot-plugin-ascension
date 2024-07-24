@@ -3,7 +3,7 @@ from typing_extensions import Self
 
 from sqlalchemy.orm import Mapped, mapped_column
 from nonebot_plugin_orm import Model, get_session
-from sqlalchemy import String, Boolean, DateTime, func
+from sqlalchemy import String, Boolean, DateTime, and_, func, select
 
 
 class UserStatus(Enum):
@@ -102,11 +102,14 @@ class User(Model):
             await session.delete(user)
 
     @classmethod
-    async def is_user_exist(cls, user_id: str) -> bool:
+    async def is_user_exist(cls, user_id: str, user_name: str) -> bool:
         """判断用户是否存在"""
         session = get_session()
         async with session.begin():
-            user = await session.get(User, user_id)
+            stmt = select(User).where(
+                and_(User.user_id == user_id, User.user_name == user_name)
+            )
+            user = (await session.execute(stmt)).scalar()
             if not user:
                 return False
             return True
