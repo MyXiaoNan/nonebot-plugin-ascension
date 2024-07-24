@@ -1,34 +1,66 @@
 import base64
 
 from nonebot import logger
-from sqlalchemy import select
-from nonebot.internal.adapter import Event
+from sqlalchemy import or_, select
+from nonebot.internal.adapter import Bot, Event
+from nonebot_plugin_userinfo import get_user_info
 from nonebot_plugin_orm import async_scoped_session
 from nonebot_plugin_userinfo.exception import NetworkError
-from nonebot_plugin_userinfo import UserInfo, EventUserInfo
-from nonebot_plugin_alconna import Button, Command, UniMessage, FallbackStrategy
+from nonebot_plugin_alconna import (
+    At,
+    Match,
+    Button,
+    Command,
+    UniMessage,
+    FallbackStrategy,
+)
 
 from nonebot_plugin_ascension.models import Buff, Sect, User
 from nonebot_plugin_ascension.utils.jsondata import jsondata
 
 from .render import render
 
-info = Command("我的修仙信息").alias("我的存档").build(use_cmd_start=True)
+info = (
+    Command("修仙信息 [target: At|str|int]")
+    .config(fuzzy_match=False)
+    .build(use_cmd_start=True)
+)
+info.shortcut("查看存档", {"command": "修仙信息", "fuzzy": True, "prefix": True})
+info.shortcut("我的存档", {"command": "修仙信息", "fuzzy": False, "prefix": True})
+info.shortcut("我的修仙信息", {"command": "修仙信息", "fuzzy": False, "prefix": True})
 
 
 @info.handle()
 async def _(
-    event: Event, session: async_scoped_session, user: UserInfo = EventUserInfo()
+    bot: Bot, event: Event, target: Match[At | str | int], session: async_scoped_session
 ):
-    user_info = await session.get(User, event.get_user_id())
-    buff_info = await session.get(Buff, event.get_user_id())
+
+    if target.available:
+        if isinstance(target.result, At):
+            name = "此人"
+            ident = target.result.target
+        else:
+            name = "此人"
+            ident = str(target.result)
+    else:
+        name = "你"
+        ident = event.get_user_id()
+
+    stmt = select(User).where(or_(User.user_id == ident, User.user_name == ident))
+    user_info = (await session.execute(stmt)).scalar()
 
     if user_info is None:
         await (
-            UniMessage.text("修仙界没有你的足迹，输入 『 /我要修仙 』 加入修仙世界吧！")
+            UniMessage.text(
+                f"修仙界没有{name}的足迹，输入 『 /我要修仙 』 加入修仙世界吧！"
+            )
             .keyboard(Button("input", "我要修仙", text="/我要修仙"))
             .finish(at_sender=True, fallback=FallbackStrategy.ignore)
         )
+
+    user = await get_user_info(bot, event, user_info.user_id)
+    if user is None:
+        return
 
     # Avatar
     if user.user_avatar:
@@ -59,6 +91,7 @@ async def _(
             level_up_status = "即刻突破！"
 
     # Buff Info
+    buff_info = await session.get(Buff, user_info.user_id)
     if buff_info is None:
         mainbuff_name = subuff_name = secbuff_name = dharma_name = armor_name = "无"
     else:
