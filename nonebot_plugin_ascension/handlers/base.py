@@ -1,17 +1,16 @@
 import random
 
-from sqlalchemy import select
 from nonebot_plugin_waiter import waiter
 from sqlalchemy.exc import IntegrityError
 from nonebot.internal.adapter import Event
 from nonebot_plugin_orm import async_scoped_session
-from nonebot_plugin_userinfo import UserInfo, EventUserInfo
 from nonebot_plugin_alconna import Match, Button, Command, UniMessage, FallbackStrategy
 
 from ..models import User
 from ..schema import Root
 from ..config import config
 from ..utils.jsondata import jsondata
+from ..utils.annotated import UserInfo, EventUserInfo
 
 start_ascension = Command("我要修仙").build(use_cmd_start=True)
 rebirth_ascension = Command("重入仙途").alias("自断筋脉").build(use_cmd_start=True)
@@ -21,10 +20,10 @@ level_up = Command("突破").build(use_cmd_start=True)
 
 
 @start_ascension.handle()
-async def _(user_info: UserInfo = EventUserInfo()):
+async def _(event_user: EventUserInfo):
 
-    user_id = user_info.user_id
-    user_name = user_info.user_name
+    user_id = event_user.user_id
+    user_name = event_user.user_name
 
     root_data = jsondata.get_all_root_data()
     root, root_type = jsondata.select_root()
@@ -74,15 +73,7 @@ async def _(user_info: UserInfo = EventUserInfo()):
 
 
 @rebirth_ascension.handle()
-async def _(event: Event, session: async_scoped_session):
-    user_info = await session.get(User, event.get_user_id())
-
-    if user_info is None:
-        await (
-            UniMessage.text("修仙界没有你的足迹，输入 『 /我要修仙 』 加入修仙世界吧！")
-            .keyboard(Button("input", "我要修仙", text="/我要修仙"))
-            .finish(at_sender=True, fallback=FallbackStrategy.ignore)
-        )
+async def _(user_info: UserInfo, session: async_scoped_session):
 
     if user_info.stone < config.rebirth_cost:
         await UniMessage("你的灵石还不够呢，快去赚点灵石吧！").finish(at_sender=True)
@@ -112,18 +103,9 @@ async def _(event: Event, session: async_scoped_session):
 @rename.handle()
 async def _(
     name: Match[str],
+    user_info: UserInfo,
     session: async_scoped_session,
-    event_user: UserInfo = EventUserInfo(),
 ):
-    stmt = select(User).where(User.user_id == event_user.user_id)
-    user_info = (await session.execute(stmt)).scalar()
-    if user_info is None:
-        await (
-            UniMessage.text("修仙界没有你的足迹，输入 『 /我要修仙 』 加入修仙世界吧！")
-            .keyboard(Button("input", "我要修仙", text="/我要修仙"))
-            .finish(at_sender=True, fallback=FallbackStrategy.ignore)
-        )
-
     if name.available:
         new_name = name.result
     else:
@@ -169,16 +151,7 @@ async def _(
 
 
 @sign_in.handle()
-async def _(event: Event, session: async_scoped_session):
-    stmt = select(User).where(User.user_id == event.get_user_id())
-    user_info = (await session.execute(stmt)).scalar()
-    if user_info is None:
-        await (
-            UniMessage.text("修仙界没有你的足迹，输入 『 /我要修仙 』 加入修仙世界吧！")
-            .keyboard(Button("input", "我要修仙", text="/我要修仙"))
-            .finish(at_sender=True, fallback=FallbackStrategy.ignore)
-        )
-
+async def _(user_info: UserInfo, session: async_scoped_session):
     if user_info.is_sign:
         await UniMessage("贪心的人是不会有好运的").finish(at_sender=True)
 
@@ -190,14 +163,6 @@ async def _(event: Event, session: async_scoped_session):
 
 
 @level_up.handle()
-async def _(event: Event, session: async_scoped_session):
-    stmt = select(User).where(User.user_id == event.get_user_id())
-    user_info = (await session.execute(stmt)).scalar()
-    if user_info is None:
-        await (
-            UniMessage.text("修仙界没有你的足迹，输入 『 /我要修仙 』 加入修仙世界吧！")
-            .keyboard(Button("input", "我要修仙", text="/我要修仙"))
-            .finish(at_sender=True, fallback=FallbackStrategy.ignore)
-        )
-
+async def _(user_info: UserInfo, session: async_scoped_session):
     # TODO
+    ...
