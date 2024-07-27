@@ -5,13 +5,15 @@ class LevelInfo(BaseModel):
     """境界信息"""
 
     power: int
-    ATK: int = Field(int, alias="atk")
-    AC: int = Field(int, alias="ac")
+    """战力"""
+    atk: int = Field(int, alias="ATK")
+    ac: int = Field(int, alias="AC")
     spend: int | float
-    HP: int = Field(int, alias="hp")
-    MP: int = Field(int, alias="mp")
+    hp: int = Field(int, alias="hp")
+    mp: int = Field(int, alias="MP")
     comment: int
     rate: int
     exp: int
-    SP: int = Field(int, alias="sp")
-    SP_RA: float = Field(float, alias="sp_ra")
+    """修为"""
+    sp: int = Field(int, alias="SP")
+    sp_ra: float = Field(float, alias="SP_RA")

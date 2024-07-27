@@ -6,10 +6,10 @@ import ujson as json
 
 from ..config import DATA_DIR
 from ..schema import (
+    Root,
     SecBuff,
     SubBuff,
     MainBuff,
-    RootType,
     ArmorBuff,
     LevelInfo,
     DharmaBuff,
@@ -59,13 +59,13 @@ class JsonData:
             self.get_level_data(all_level_name[level_index + 1])
         )
 
-    def get_all_root_data(self) -> dict[str, RootType]:
+    def get_all_root_data(self) -> dict[str, Root]:
         """获取全部灵根数据"""
         return json.loads(self.root_path.read_text("utf-8"))
 
-    def get_root_data(self, name: str) -> RootType:
+    def get_root_data(self, name: str) -> Root:
         """获取灵根数据"""
-        return RootType.model_validate(self.get_all_root_data()[name])
+        return Root.model_validate(self.get_all_root_data()[name])
 
     def get_mainbuff_data(self, key: str | int) -> MainBuff:
         """获取功法数据"""
@@ -101,13 +101,12 @@ class JsonData:
         data = self.get_all_root_data()
         root_types: list[str] = list(data.keys())
         root_rate = [
-            RootType.model_validate(data[root_type]).type_rate
-            for root_type in root_types
+            Root.model_validate(data[root_type]).rate for root_type in root_types
         ]
 
         select_root_type: str = random.choices(root_types, weights=root_rate, k=1)[0]
         select_root: str = random.choice(
-            RootType.model_validate(data[select_root_type]).type_list
+            Root.model_validate(data[select_root_type]).type_list
         )
 
         return select_root, select_root_type

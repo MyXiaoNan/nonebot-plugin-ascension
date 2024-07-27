@@ -9,8 +9,8 @@ from nonebot_plugin_userinfo import UserInfo, EventUserInfo
 from nonebot_plugin_alconna import Match, Button, Command, UniMessage, FallbackStrategy
 
 from ..models import User
+from ..schema import Root
 from ..config import config
-from ..schema import RootType
 from ..utils.jsondata import jsondata
 
 start_ascension = Command("我要修仙").build(use_cmd_start=True)
@@ -28,9 +28,7 @@ async def _(user_info: UserInfo = EventUserInfo()):
 
     root_data = jsondata.get_all_root_data()
     root, root_type = jsondata.select_root()
-    power: int = int(
-        100 * float(RootType.model_validate(root_data[root_type]).type_speeds)
-    )
+    power: int = int(100 * float(Root.model_validate(root_data[root_type]).speeds))
 
     user = User(
         user_id=user_id,
@@ -91,7 +89,7 @@ async def _(event: Event, session: async_scoped_session):
 
     root_data = jsondata.get_all_root_data()
     root, root_type = jsondata.select_root()
-    power: int = int(100 * float(root_data[root_type].type_speeds))
+    power: int = int(100 * float(root_data[root_type].speeds))
 
     user = User(
         user_id=user_info.user_id,
