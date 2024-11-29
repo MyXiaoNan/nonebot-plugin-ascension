@@ -167,3 +167,4 @@ data
 
 # VScode
 .vscode
+/bot.py
