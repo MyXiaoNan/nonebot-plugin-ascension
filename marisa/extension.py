@@ -17,14 +17,14 @@ class TextToImageExtension(Extension):
 
     async def send_wrapper(
         self, bot: Bot, event: Event, send: str | Message | UniMessage
-    ):
+    ) -> str | Message | UniMessage:
         plain_text = (
             send.extract_plain_text()
             if isinstance(send, Message | UniMessage)
             else send
         )
         extra_segment = send.exclude(Text) if isinstance(send, UniMessage) else send
-        if config.basic.send_with_image and plain_text != "":
+        if config.basic.send_with_image and plain_text:
             return (
                 UniMessage.image(
                     raw=await text_to_pic(
