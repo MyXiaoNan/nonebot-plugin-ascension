@@ -7,7 +7,7 @@
 
 <div align="center">
 
-# NoneBot-Plugin-Ascension
+# Marisa
 
 _✨ 欢迎来到修真界 ✨_
 
@@ -23,8 +23,7 @@ _✨ 欢迎来到修真界 ✨_
 
 ## 📖 介绍
 
-NoneBot2 修真插件
-
+NoneBot2 修真机器人
 
 ## 👥 贡献
 
@@ -43,4 +42,3 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
-

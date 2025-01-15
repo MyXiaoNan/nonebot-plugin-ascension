@@ -7,7 +7,7 @@ from nonebot_plugin_orm import async_scoped_session
 from nonebot_plugin_alconna import Match, Button, Command, UniMessage, FallbackStrategy
 
 from ..models import User
-from ..schema import Root
+from ..schemas import Root
 from ..config import config
 from ..utils.jsondata import jsondata
 from ..utils.annotated import UserInfo, EventUserInfo

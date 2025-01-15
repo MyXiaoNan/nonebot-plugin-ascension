@@ -164,6 +164,7 @@ cython_debug/
 .ruff_cache
 data
 /ascension.db
+/marisa.db
 
 # VScode
 .vscode

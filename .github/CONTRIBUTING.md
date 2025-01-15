@@ -1,6 +1,7 @@
 # 贡献指南
-首先，感谢大家为 Ascension 贡献代码
-本张旨在引导你更规范地向 Ascension 提交贡献，请务必认真阅读。
+
+首先，感谢大家为 Marisa 贡献代码
+本张旨在引导你更规范地向 Marisa 提交贡献，请务必认真阅读。
 
 **我们欢迎一切贡献！并对每个愿意贡献的人表示衷心的感谢！** 💖
 
@@ -8,7 +9,7 @@
 
 ## 提交 Issue
 
-在提交 Issue 前，我们建议你先查看 [已有的 Issues](https://github.com/MyXiaoNan/nonebot-plugin-ascension/issues)，以防重复提交。
+在提交 Issue 前，我们建议你先查看 [已有的 Issues](https://github.com/MyXiaoNan/Marisa/issues)，以防重复提交。
 
 ### 报告问题
 
@@ -35,11 +36,11 @@ pre-commit install
 
 ### 使用 GitHub Codespaces（Dev Container）
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/MyXiaoNan/nonebot-plugin-ascension)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/MyXiaoNan/Marisa)
 
 ### 使用 GitPod
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#/https://github.com/MyXiaoNan/nonebot-plugin-ascension)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#/https://github.com/MyXiaoNan/Marisa)
 
 ### Commit 规范
 
@@ -47,10 +48,9 @@ pre-commit install
 
 本插件 的 commit message 格式遵循 [gitmoji](https://gitmoji.dev/) 规范，在创建 commit 时请牢记这一点。
 
-
 ### 工作流概述
 
-`master` 分支为 本插件 的开发分支，在任何情况下都请不要直接修改 `master` 分支，而是创建一个目标分支为 `nonebot-plugin-ascension:master` 的 Pull Request 来提交修改。Pull Request 标题请尽量更改成中文，以便阅读。
+`master` 分支为 本插件 的开发分支，在任何情况下都请不要直接修改 `master` 分支，而是创建一个目标分支为 `Marisa:master` 的 Pull Request 来提交修改。Pull Request 标题请尽量更改成中文，以便阅读。
 
 如果你不是 本团队 的成员，可在 fork 本仓库后，向本仓库的 master 分支发起 Pull Request，注意遵循先前提到的 commit message 规范创建 commit。我们将在 code review 通过后通过 squash merge 方式将您的贡献合并到主分支。
 

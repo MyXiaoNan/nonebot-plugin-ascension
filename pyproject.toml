@@ -1,5 +1,5 @@
 [project]
-name = "nonebot-plugin-ascension"
+name = "marisa"
 version = "0.1.0"
 description = "Welcome to the world of cultivation."
 authors = [
@@ -23,6 +23,12 @@ adapters = [
     "nonebot-adapter-onebot>=2.4.4",
     "nonebot-adapter-telegram>=0.1.0b17",
 ]
+
+[tool.nonebot]
+adapters = [
+    { name = "OneBot V11", module_name = "nonebot.adapters.onebot.v11" }
+]
+plugins = ["marisa"]
 
 [tool.pdm]
 distribution = true

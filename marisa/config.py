@@ -6,7 +6,7 @@ from nonebot.plugin import get_plugin_config
 BOT_DIR = Path.cwd()
 """Bot 根目录"""
 
-DATA_DIR = BOT_DIR / "data" / "ascension"
+DATA_DIR = BOT_DIR / "data" / "marisa"
 """数据保存目录"""
 TEMPLATE_DIR = DATA_DIR / "templates"
 """模板保存目录"""
@@ -79,8 +79,8 @@ class ScopedConfig(BaseModel):
 
 
 class Config(BaseModel):
-    ascension: ScopedConfig = Field(default_factory=ScopedConfig)
-    """Ascension Config"""
+    marisa: ScopedConfig = Field(default_factory=ScopedConfig)
+    """Marisa Config"""
 
 
-config: ScopedConfig = get_plugin_config(Config).ascension
+config: ScopedConfig = get_plugin_config(Config).marisa

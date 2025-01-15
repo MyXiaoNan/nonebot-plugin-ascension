@@ -15,8 +15,8 @@ from nonebot_plugin_alconna import (
     FallbackStrategy,
 )
 
-from nonebot_plugin_ascension.models import Buff, Sect, User
-from nonebot_plugin_ascension.utils.jsondata import jsondata
+from marisa.models import Buff, Sect, User
+from marisa.utils.jsondata import jsondata
 
 from .render import render
 

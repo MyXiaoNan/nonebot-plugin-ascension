@@ -14,8 +14,8 @@ from .models import Sect as Sect
 from .models import User as User
 
 # from .handlers import buff as buff
-from .handlers import base as base
-from .handlers import info as info
+from .plugins import base as base
+from .plugins import info as info
 from .models import UserCD as UserCD
 from .models import Backpack as Backpack
 from .utils.resource import check_resource
@@ -27,10 +27,10 @@ __plugin_meta__ = PluginMetadata(
     usage="详见文档",
     type="application",
     config=Config,
-    homepage="https://github.com/MyXiaoNan/nonebot-plugin-ascension",
+    homepage="https://github.com/MyXiaoNan/Marisa",
     supported_adapters=inherit_supported_adapters("nonebot_plugin_alconna"),
     extra={
-        "unique_name": "Ascension",
+        "unique_name": "Marisa",
         "orm_version_location": migrations,
         "author": "Komorebi <mute231010@gmail.com>",
         "version": "0.1.0",
