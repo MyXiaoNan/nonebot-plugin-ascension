@@ -4,7 +4,7 @@ from pathlib import Path
 
 import ujson as json
 
-from ..config import DATA_DIR
+from ..configs import DATA_DIR
 from ..schemas import (
     Root,
     SecBuff,

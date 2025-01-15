@@ -13,7 +13,7 @@ from rich.progress import (
     TransferSpeedColumn,
 )
 
-from ..config import DATA_DIR
+from ..configs import DATA_DIR
 
 
 async def check_resource():

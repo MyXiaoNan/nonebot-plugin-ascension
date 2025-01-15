@@ -2,7 +2,7 @@ from typing import Any
 
 from nonebot_plugin_htmlrender import template_to_pic
 
-from marisa.config import DATA_DIR
+from marisa.configs import DATA_DIR
 
 
 async def render(info: dict[str, Any]) -> bytes:

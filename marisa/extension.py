@@ -3,7 +3,7 @@ from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot.internal.adapter import Bot, Event, Message
 from nonebot_plugin_alconna.extension import Extension, add_global_extension
 
-from .config import TEMPLATE_DIR, config
+from .configs import TEMPLATE_DIR, config
 
 
 class TextToImageExtension(Extension):
@@ -18,7 +18,7 @@ class TextToImageExtension(Extension):
     async def send_wrapper(
         self, bot: Bot, event: Event, send: str | Message | UniMessage
     ):
-        if config.send_with_image:
+        if config.basic.send_with_image:
             return UniMessage.image(
                 raw=await text_to_pic(
                     str(send), css_path=str(TEMPLATE_DIR / "message.css")
