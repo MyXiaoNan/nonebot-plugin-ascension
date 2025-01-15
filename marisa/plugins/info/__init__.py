@@ -1,11 +1,7 @@
-import base64
-
-from nonebot import logger
 from sqlalchemy import or_, select
+from nonebot_plugin_uninfo import get_session
 from nonebot.internal.adapter import Bot, Event
-from nonebot_plugin_userinfo import get_user_info
 from nonebot_plugin_orm import async_scoped_session
-from nonebot_plugin_userinfo.exception import NetworkError
 from nonebot_plugin_alconna import (
     At,
     Match,
@@ -32,7 +28,10 @@ info.shortcut("我的修仙信息", {"command": "修仙信息", "fuzzy": False, 
 
 @info.handle()
 async def _(
-    bot: Bot, event: Event, target: Match[At | str | int], session: async_scoped_session
+    bot: Bot,
+    event: Event,
+    target: Match[At | str | int],
+    db_session: async_scoped_session,
 ):
     if target.available:
         if isinstance(target.result, At):
@@ -46,7 +45,7 @@ async def _(
         ident = event.get_user_id()
 
     stmt = select(User).where(or_(User.user_id == ident, User.user_name == ident))
-    user_info = (await session.execute(stmt)).scalar()
+    user_info = (await db_session.execute(stmt)).scalar()
 
     if user_info is None:
         await (
@@ -57,24 +56,15 @@ async def _(
             .finish(at_sender=True, fallback=FallbackStrategy.ignore)
         )
 
-    user = await get_user_info(bot, event, user_info.user_id)
-    if user is None:
+    session = await get_session(bot, event)
+    if session is None:
         return
 
     # Avatar
-    if user.user_avatar:
-        try:
-            user_avatar_bytes: bytes = await user.user_avatar.get_image()
-            user_avatar: str = "data:image/png;base64," + base64.b64encode(
-                user_avatar_bytes
-            ).decode("utf-8")
-        except NetworkError:
-            logger.debug("头像下载失败，使用默认头像")
-            user_avatar: str = (
-                "https://avatars.githubusercontent.com/u/170725170?s=200&v=4"
-            )
-    else:
-        user_avatar: str = "https://avatars.githubusercontent.com/u/170725170?s=200&v=4"
+    user_avatar = (
+        session.user.avatar
+        or "https://avatars.githubusercontent.com/u/170725170?s=200&v=4"
+    )
 
     # Level Up Info
     level_rate = jsondata.get_level_data(user_info.level).spend
@@ -90,7 +80,7 @@ async def _(
             level_up_status = "即刻突破！"
 
     # Buff Info
-    buff_info = await session.get(Buff, user_info.user_id)
+    buff_info = await db_session.get(Buff, user_info.user_id)
     if buff_info is None:
         mainbuff_name = subuff_name = secbuff_name = dharma_name = armor_name = "无"
     else:
@@ -132,7 +122,7 @@ async def _(
 
     # Sect Info
     sect_id = user_info.sect_id
-    sect_info = await session.get(Sect, sect_id)
+    sect_info = await db_session.get(Sect, sect_id)
     if sect_id and sect_info:
         sect_name = sect_info.sect_name
         sect_position = user_info.sect_position
@@ -143,7 +133,7 @@ async def _(
     register_query = select(User.user_id, User.create_time).order_by(
         User.create_time.asc()
     )
-    register_rank = await session.execute(register_query)
+    register_rank = await db_session.execute(register_query)
     user_register_rank = next(
         (
             rank
@@ -154,7 +144,7 @@ async def _(
     )
 
     exp_query = select(User.user_id, User.exp).order_by(User.exp.desc())
-    exp_rank = await session.execute(exp_query)
+    exp_rank = await db_session.execute(exp_query)
     user_exp_rank = next(
         (
             rank
@@ -165,7 +155,7 @@ async def _(
     )
 
     stone_query = select(User.user_id, User.stone).order_by(User.stone.desc())
-    stone_rank = await session.execute(stone_query)
+    stone_rank = await db_session.execute(stone_query)
     user_stone_rank = next(
         (
             rank
@@ -198,5 +188,5 @@ async def _(
     }
 
     img = await render(info_map)
-    await session.commit()
+    await db_session.commit()
     await UniMessage.image(raw=img).finish(at_sender=True)

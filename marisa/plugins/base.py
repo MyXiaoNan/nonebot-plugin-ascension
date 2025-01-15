@@ -1,5 +1,6 @@
 import random
 
+from nonebot_plugin_uninfo import Uninfo
 from nonebot_plugin_waiter import waiter
 from sqlalchemy.exc import IntegrityError
 from nonebot.internal.adapter import Event
@@ -10,7 +11,7 @@ from ..models import User
 from ..schemas import Root
 from ..configs import config
 from ..utils.jsondata import jsondata
-from ..utils.annotated import UserInfo, EventUserInfo
+from ..utils.annotated import UserInfo
 
 start_ascension = Command("我要修仙").build(use_cmd_start=True)
 rebirth_ascension = Command("重入仙途").alias("自断筋脉").build(use_cmd_start=True)
@@ -20,9 +21,9 @@ level_up = Command("突破").build(use_cmd_start=True)
 
 
 @start_ascension.handle()
-async def _(event_user: EventUserInfo):
-    user_id = event_user.user_id
-    user_name = event_user.user_name
+async def _(session: Uninfo):
+    user_id = session.user.id
+    user_name = session.user.name or "无名客"
 
     root_data = jsondata.get_all_root_data()
     root, root_type = jsondata.select_root()

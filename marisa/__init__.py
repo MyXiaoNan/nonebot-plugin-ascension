@@ -5,7 +5,6 @@ require("nonebot_plugin_orm")
 require("nonebot_plugin_uninfo")
 require("nonebot_plugin_waiter")
 require("nonebot_plugin_alconna")
-require("nonebot_plugin_userinfo")
 require("nonebot_plugin_htmlrender")
 
 from . import migrations
@@ -27,7 +26,9 @@ __plugin_meta__ = PluginMetadata(
     usage="详见文档",
     type="application",
     homepage="https://github.com/MyXiaoNan/Marisa",
-    supported_adapters=inherit_supported_adapters("nonebot_plugin_alconna"),
+    supported_adapters=inherit_supported_adapters(
+        "nonebot_plugin_uninfo", "nonebot_plugin_alconna"
+    ),
     extra={
         "unique_name": "Marisa",
         "orm_version_location": migrations,
