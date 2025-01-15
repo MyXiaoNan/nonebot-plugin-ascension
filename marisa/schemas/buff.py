@@ -53,7 +53,7 @@ class SubBuff(BaseModel):
     jin: int
     drop: int
     fan: int
-    abreak: int = Field(int, alias="break")
+    abreak: int = Field(..., alias="break")
     exp: int
     desc: str
     rank: str
