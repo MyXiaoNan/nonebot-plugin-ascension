@@ -9,7 +9,7 @@ class LevelInfo(BaseModel):
     atk: int = Field(..., alias="ATK")
     ac: int = Field(..., alias="AC")
     spend: int | float
-    hp: int = Field(..., alias="hp")
+    hp: int = Field(..., alias="HP")
     mp: int = Field(..., alias="MP")
     comment: int
     rate: int
