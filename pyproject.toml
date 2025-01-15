@@ -18,6 +18,10 @@ requires-python = ">=3.10"
 readme = "README.md"
 license = { text = "MIT" }
 
+[project.urls]
+homepage = "https://github.com/MyXiaoNan/Marisa"
+repository = "https://github.com/MyXiaoNan/Marisa"
+
 [project.optional-dependencies]
 adapters = [
     "nonebot-adapter-onebot>=2.4.4",
