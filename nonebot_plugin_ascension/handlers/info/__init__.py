@@ -34,7 +34,6 @@ info.shortcut("我的修仙信息", {"command": "修仙信息", "fuzzy": False, 
 async def _(
     bot: Bot, event: Event, target: Match[At | str | int], session: async_scoped_session
 ):
-
     if target.available:
         if isinstance(target.result, At):
             name = "此人"

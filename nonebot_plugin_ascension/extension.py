@@ -7,7 +7,6 @@ from .config import TEMPLATE_DIR, config
 
 
 class TextToImageExtension(Extension):
-
     @property
     def priority(self) -> int:
         return 10

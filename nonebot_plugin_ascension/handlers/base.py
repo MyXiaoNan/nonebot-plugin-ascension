@@ -21,7 +21,6 @@ level_up = Command("突破").build(use_cmd_start=True)
 
 @start_ascension.handle()
 async def _(event_user: EventUserInfo):
-
     user_id = event_user.user_id
     user_name = event_user.user_name
 
@@ -74,7 +73,6 @@ async def _(event_user: EventUserInfo):
 
 @rebirth_ascension.handle()
 async def _(user_info: UserInfo, session: async_scoped_session):
-
     if user_info.stone < config.rebirth_cost:
         await UniMessage("你的灵石还不够呢，快去赚点灵石吧！").finish(at_sender=True)
 
