@@ -23,14 +23,17 @@ async def check_resource():
         DATA_DIR.mkdir(parents=True, exist_ok=True)
 
     logger.info("正在检查资源完整性")
-    if not DATA_DIR.is_dir():
+
+    subfolders_count = len([f for f in DATA_DIR.iterdir() if f.is_dir()])
+
+    if subfolders_count < 4:
+        logger.info("资源缺失，即刻下载")
         try:
             async with httpx.AsyncClient(timeout=10.0).stream(
                 "GET",
                 url="https://github.com/MyXiaoNan/resources/raw/main/resources.zip",
                 follow_redirects=True,
             ) as response:
-                logger.info("开始下载资源文件")
                 async with aiofiles.open(DATA_DIR / "resources.zip", "wb") as wf:
                     total: int = int(response.headers["Content-Length"])
                     with Progress(
