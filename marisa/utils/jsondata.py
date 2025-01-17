@@ -21,15 +21,15 @@ class JsonData:
     """Ascension Json Data"""
 
     def __init__(self):
-        self.root_path: Path = DATA_DIR / "data" / "灵根.json"
-        self.level_path: Path = DATA_DIR / "data" / "境界.json"
-        self.sect_path: Path = DATA_DIR / "data" / "宗门.json"
-        self.level_up_rate_path: Path = DATA_DIR / "data" / "突破概率.json"
-        self.mainbuff_path: Path = DATA_DIR / "data" / "功法" / "主功法.json"
-        self.subuff_path: Path = DATA_DIR / "data" / "功法" / "辅修功法.json"
-        self.secbuff_path: Path = DATA_DIR / "data" / "功法" / "神通.json"
-        self.dharma_path: Path = DATA_DIR / "data" / "装备" / "法器.json"
-        self.armor_path: Path = DATA_DIR / "data" / "装备" / "防具.json"
+        self.root_path: Path = DATA_DIR / "灵根.json"
+        self.level_path: Path = DATA_DIR / "境界.json"
+        self.sect_path: Path = DATA_DIR / "宗门.json"
+        self.level_up_rate_path: Path = DATA_DIR / "突破概率.json"
+        self.mainbuff_path: Path = DATA_DIR / "功法" / "主功法.json"
+        self.subuff_path: Path = DATA_DIR / "功法" / "辅修功法.json"
+        self.secbuff_path: Path = DATA_DIR / "功法" / "神通.json"
+        self.dharma_path: Path = DATA_DIR / "装备" / "法器.json"
+        self.armor_path: Path = DATA_DIR / "装备" / "防具.json"
 
     def _get_level_data(self) -> dict[str, LevelInfo]:
         """获取境界数据"""

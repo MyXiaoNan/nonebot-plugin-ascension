@@ -1,12 +1,16 @@
 from enum import Enum
+from typing import TYPE_CHECKING
 from typing_extensions import Self
 
-from sqlalchemy.orm import Mapped, mapped_column
 from nonebot_plugin_orm import Model, get_session
-from sqlalchemy import String, Boolean, DateTime, and_, func, select
+from sqlalchemy.orm import Mapped, relationship, mapped_column
+from sqlalchemy import String, Boolean, DateTime, ForeignKey, and_, func, select
+
+if TYPE_CHECKING:
+    from . import Buff, Sect, Backpack
 
 
-class UserStatus(Enum):
+class UserStatusType(Enum):
     """用户状态"""
 
     NONE = 0
@@ -26,9 +30,9 @@ class User(Model):
 
     __tablename__ = "user"
 
-    user_id: Mapped[str] = mapped_column(primary_key=True, unique=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     """用户 ID"""
-    user_name: Mapped[str] = mapped_column(String(15), primary_key=True, unique=True)
+    user_name: Mapped[str] = mapped_column(String(15), unique=True)
     """用户名"""
     user_title: Mapped[str | None]
     """称号"""
@@ -40,22 +44,98 @@ class User(Model):
     """等级"""
     stone: Mapped[int]
     """灵石"""
-    power: Mapped[int] = mapped_column(default=0)
-    """战力"""
-    user_stamina: Mapped[int] = mapped_column(default=240)
-    """体力"""
     exp: Mapped[int] = mapped_column(default=0)
     """经验"""
-    sect_id: Mapped[str | None]
+    create_time: Mapped[DateTime] = mapped_column(DateTime, default=func.now())
+    """创建时间"""
+    last_check_time: Mapped[DateTime] = mapped_column(
+        DateTime, default=func.now(), onupdate=func.now()
+    )
+    """上次检查时间"""
+
+    buff: Mapped["Buff"] = relationship("Buff", back_populates=None, uselist=False)
+    sect: Mapped["UserSect"] = relationship(
+        "UserSect", back_populates=None, uselist=False
+    )
+    status: Mapped["UserStatus"] = relationship(
+        "UserStatus", back_populates=None, uselist=False
+    )
+    backpack: Mapped[list["Backpack"]] = relationship("Backpack", back_populates=None)
+
+    @classmethod
+    async def create_user(cls, user: Self):
+        """创建用户"""
+        from . import Buff
+
+        sect = UserSect(id=user.id, user_id=user.id)
+        status = UserStatus(id=user.id, user_id=user.id)
+        buff = Buff(id=user.id, user_id=user.id)
+
+        objects = [user, sect, status, buff]
+
+        session = get_session()
+        async with session.begin():
+            session.add_all(objects)
+
+    @classmethod
+    async def delete_user(cls, user: Self):
+        """删除用户"""
+        session = get_session()
+        async with session.begin():
+            await session.delete(user)
+
+    @classmethod
+    async def is_user_exist(cls, id: int, user_name: str) -> bool:
+        """判断用户是否存在"""
+        session = get_session()
+        async with session.begin():
+            stmt = select(User).where(and_(User.id == id, User.user_name == user_name))
+            user = (await session.execute(stmt)).scalar()
+            if not user:
+                return False
+            return True
+
+
+class UserSect(Model):
+    """用户宗门信息表"""
+
+    __tablename__ = "user_sect"
+
+    id: Mapped[str] = mapped_column(primary_key=True)
+
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id", ondelete="CASCADE"))
+    """用户 ID"""
+    sect_id: Mapped[int | None] = mapped_column(ForeignKey("sect.id"))
     """宗门 ID"""
-    sect_position: Mapped[str | None]
-    """宗门职务"""
-    sect_task: Mapped[int] = mapped_column(default=0)
-    """宗门任务"""
-    sect_contribution: Mapped[int] = mapped_column(default=0)
-    """宗门贡献"""
-    sect_elixir_get: Mapped[int] = mapped_column(default=0)
-    """宗门丹药获取"""
+    position: Mapped[str | None]
+    """职务"""
+    task: Mapped[int] = mapped_column(default=0)
+    """任务"""
+    contribution: Mapped[int] = mapped_column(default=0)
+    """贡献"""
+    elixir_get: Mapped[int] = mapped_column(default=0)
+    """丹药获取"""
+
+    info: Mapped["Sect"] = relationship("Sect", back_populates=None)
+
+
+class UserStatus(Model):
+    """用户状态信息表"""
+
+    __tablename__ = "user_status"
+
+    id: Mapped[str] = mapped_column(primary_key=True)
+
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("user.id", ondelete="CASCADE"),
+    )
+    """用户 ID"""
+    status: Mapped[UserStatusType] = mapped_column(default=UserStatusType.NONE)
+    """状态"""
+    create_time: Mapped[DateTime] = mapped_column(DateTime, default=func.now())
+    """创建时间"""
+    scheduled_time: Mapped[int | None]
+    """计划时间"""
     is_sign: Mapped[bool] = mapped_column(Boolean, default=False)
     """是否签到"""
     is_beg: Mapped[bool] = mapped_column(Boolean, default=False)
@@ -68,63 +148,3 @@ class User(Model):
     """突破概率"""
     work_refresh_times: Mapped[int] = mapped_column(default=0)
     """悬赏令刷新次数"""
-    hp: Mapped[int] = mapped_column(default=0)
-    """生命值"""
-    mp: Mapped[int] = mapped_column(default=0)
-    """真元"""
-    atk: Mapped[int] = mapped_column(default=0)
-    """攻击力"""
-    atk_practice: Mapped[int] = mapped_column(default=0)
-    """攻击修炼等级"""
-    blessed_spot_name: Mapped[str | None]
-    """洞天福地名称"""
-    blessed_spot_flag: Mapped[int] = mapped_column(default=0)
-    """洞天福地标志"""
-    create_time: Mapped[DateTime] = mapped_column(DateTime, default=func.now())
-    """创建时间"""
-    last_check_time: Mapped[DateTime] = mapped_column(
-        DateTime, default=func.now(), onupdate=func.now()
-    )
-    """上次检查时间"""
-
-    @classmethod
-    async def create_user(cls, user: Self):
-        """创建用户"""
-        session = get_session()
-        async with session.begin():
-            session.add(user)
-
-    @classmethod
-    async def delete_user(cls, user: Self):
-        """删除用户"""
-        session = get_session()
-        async with session.begin():
-            await session.delete(user)
-
-    @classmethod
-    async def is_user_exist(cls, user_id: str, user_name: str) -> bool:
-        """判断用户是否存在"""
-        session = get_session()
-        async with session.begin():
-            stmt = select(User).where(
-                and_(User.user_id == user_id, User.user_name == user_name)
-            )
-            user = (await session.execute(stmt)).scalar()
-            if not user:
-                return False
-            return True
-
-
-class UserCD(Model):
-    """用户 CD"""
-
-    __tablename__ = "user_cd"
-
-    user_id: Mapped[str] = mapped_column(primary_key=True)
-    """用户 ID"""
-    status: Mapped[UserStatus] = mapped_column(default=UserStatus.NONE)
-    """状态"""
-    create_time: Mapped[DateTime] = mapped_column(DateTime, default=func.now())
-    """创建时间"""
-    scheduled_time: Mapped[int | None]
-    """计划时间"""

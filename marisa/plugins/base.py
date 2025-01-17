@@ -4,6 +4,7 @@ from nonebot_plugin_uninfo import Uninfo
 from nonebot_plugin_waiter import waiter
 from sqlalchemy.exc import IntegrityError
 from nonebot.internal.adapter import Event
+from nonebot_plugin_user import UserSession
 from nonebot_plugin_orm import async_scoped_session
 from nonebot_plugin_alconna import Match, Button, Command, UniMessage, FallbackStrategy
 
@@ -21,8 +22,7 @@ level_up = Command("突破").build(use_cmd_start=True)
 
 
 @start_ascension.handle()
-async def _(session: Uninfo):
-    user_id = session.user.id
+async def _(session: Uninfo, user_session: UserSession):
     user_name = session.user.name or "无名客"
 
     root_data = jsondata.get_all_root_data()
@@ -30,16 +30,15 @@ async def _(session: Uninfo):
     power: int = int(100 * float(Root.model_validate(root_data[root_type]).speeds))
 
     user = User(
-        user_id=user_id,
+        id=user_session.user.id,
         user_name=user_name,
         root=root,
         root_type=root_type,
         level="江湖好手",
         stone=0,
-        power=power,
     )
 
-    if not await User.is_user_exist(user_id, user_name):
+    if not await User.is_user_exist(user.id, user_name):
         try:
             await User.create_user(user)
         except IntegrityError:
@@ -82,13 +81,12 @@ async def _(user_info: UserInfo, session: async_scoped_session):
     power: int = int(100 * float(root_data[root_type].speeds))
 
     user = User(
-        user_id=user_info.user_id,
+        id=user_info.id,
         user_name=user_info.user_name,
         root=root,
         root_type=root_type,
         level="江湖好手",
         stone=0,
-        power=power,
     )
 
     await User.delete_user(user_info)
@@ -151,12 +149,12 @@ async def _(
 
 @sign_in.handle()
 async def _(user_info: UserInfo, session: async_scoped_session):
-    if user_info.is_sign:
+    if user_info.status.is_sign:
         await UniMessage("贪心的人是不会有好运的").finish(at_sender=True)
 
     stone = random.randint(config.sign_in.stone[0], config.sign_in.stone[1])
     user_info.stone += stone
-    user_info.is_sign = True
+    user_info.status.is_sign = True
     await session.commit()
     await UniMessage(f"签到成功，获得 {stone} 块灵石").finish(at_sender=True)
 

@@ -1,7 +1,9 @@
 from sqlalchemy import or_, select
+from sqlalchemy.orm import selectinload
 from nonebot_plugin_uninfo import get_session
 from nonebot.internal.adapter import Bot, Event
 from nonebot_plugin_orm import async_scoped_session
+from nonebot_plugin_user import UserSession, get_user
 from nonebot_plugin_alconna import (
     At,
     Match,
@@ -11,7 +13,7 @@ from nonebot_plugin_alconna import (
     FallbackStrategy,
 )
 
-from marisa.models import Buff, Sect, User
+from marisa.models import Buff, User
 from marisa.utils.jsondata import jsondata
 
 from .render import render
@@ -32,19 +34,24 @@ async def _(
     event: Event,
     target: Match[At | str | int],
     db_session: async_scoped_session,
+    user_session: UserSession,
 ):
     if target.available:
+        name = "此人"
         if isinstance(target.result, At):
-            name = "此人"
-            ident = target.result.target
+            platform_id = target.result.target
+            ident = (await get_user(user_session.platform, platform_id)).id
         else:
-            name = "此人"
-            ident = str(target.result)
+            ident = target.result
     else:
         name = "你"
-        ident = event.get_user_id()
+        ident = user_session.user_id
 
-    stmt = select(User).where(or_(User.user_id == ident, User.user_name == ident))
+    stmt = (
+        select(User)
+        .options(selectinload(User.sect), selectinload(User.buff))
+        .where(or_(User.id == ident, User.user_name == ident))
+    )
     user_info = (await db_session.execute(stmt)).scalar()
 
     if user_info is None:
@@ -80,87 +87,84 @@ async def _(
             level_up_status = "即刻突破！"
 
     # Buff Info
-    buff_info = await db_session.get(Buff, user_info.user_id)
+    buff_info = await db_session.get(Buff, user_info.id)
     if buff_info is None:
         mainbuff_name = subuff_name = secbuff_name = dharma_name = armor_name = "无"
     else:
         mainbuff_name = (
             f"""
-        {jsondata.get_mainbuff_data(buff_info.main_buff).name}（{jsondata.get_mainbuff_data(buff_info.main_buff).level}）
-        """
-            if buff_info.main_buff is not None
+            {jsondata.get_mainbuff_data(buff_info.main_buff).name}（{jsondata.get_mainbuff_data(buff_info.main_buff).level}）
+            """
+            if buff_info.main_buff != 0
             else "无"
         )
         subuff_name = (
             f"""
             {jsondata.get_subuff_data(buff_info.sub_buff).name}（{jsondata.get_subuff_data(buff_info.sub_buff).level}）
             """
-            if buff_info.sub_buff is not None
+            if buff_info.sub_buff != 0
             else "无"
         )
         secbuff_name = (
             f"""
             {jsondata.get_secbuff_data(buff_info.sec_buff).name}（{jsondata.get_secbuff_data(buff_info.sec_buff).level}）
             """
-            if buff_info.sec_buff is not None
+            if buff_info.sec_buff != 0
             else "无"
         )
         dharma_name = (
             f"""
-            {jsondata.get_dharma_data(buff_info.dharma_buff).name}（{jsondata.get_dharma_data(buff_info.dharma_buff).level}）
+            {jsondata.get_dharma_data(buff_info.dharma).name}（{jsondata.get_dharma_data(buff_info.dharma).level}）
             """
-            if buff_info.dharma_buff is not None
+            if buff_info.dharma != 0
             else "无"
         )
         armor_name = (
             f"""
-            {jsondata.get_armor_data(buff_info.armor_buff).name}（{jsondata.get_armor_data(buff_info.armor_buff).level}）
+            {jsondata.get_armor_data(buff_info.armor).name}（{jsondata.get_armor_data(buff_info.armor).level}）
             """
-            if buff_info.armor_buff is not None
+            if buff_info.armor != 0
             else "无"
         )
 
     # Sect Info
-    sect_id = user_info.sect_id
-    sect_info = await db_session.get(Sect, sect_id)
-    if sect_id and sect_info:
-        sect_name = sect_info.sect_name
-        sect_position = user_info.sect_position
+    sect_id = user_info.sect.sect_id
+    if sect_id:
+        sect_name = user_info.sect.info.name
+        sect_position = user_info.sect.position
     else:
         sect_name = sect_position = "无"
 
     # Rank
-    register_query = select(User.user_id, User.create_time).order_by(
-        User.create_time.asc()
-    )
+    register_query = select(User.id, User.create_time).order_by(User.create_time.asc())
     register_rank = await db_session.execute(register_query)
     user_register_rank = next(
         (
             rank
             for rank, (user_id, create_time) in enumerate(register_rank, start=1)
-            if user_id == user_info.user_id
+            if user_id == user_info.id
         ),
         None,
     )
 
-    exp_query = select(User.user_id, User.exp).order_by(User.exp.desc())
+    exp_query = select(User.id, User.exp).order_by(User.exp.desc())
     exp_rank = await db_session.execute(exp_query)
     user_exp_rank = next(
         (
             rank
             for rank, (user_id, exp) in enumerate(exp_rank, start=1)
-            if user_id == user_info.user_id
+            if user_id == user_info.id
         ),
         None,
     )
 
-    stone_query = select(User.user_id, User.stone).order_by(User.stone.desc())
+    stone_query = select(User.id, User.stone).order_by(User.stone.desc())
     stone_rank = await db_session.execute(stone_query)
     user_stone_rank = next(
         (
             rank
             for rank, (user_id, stone) in enumerate(stone_rank, start=1)
-            if user_id == user_info.user_id
+            if user_id == user_info.id
         ),
         None,
     )
@@ -177,7 +181,7 @@ async def _(
         "mainbuff": mainbuff_name,
         "secbuff": secbuff_name,
         "subuff": subuff_name,
-        "atk": f"{user_info.atk}，攻修等级：{user_info.atk_practice} 级",
+        "atk": f"{user_info.buff.atk}，攻修等级：{user_info.buff.atk_level} 级",
         "dharma": dharma_name,
         "armor": armor_name,
         "sect_name": sect_name,

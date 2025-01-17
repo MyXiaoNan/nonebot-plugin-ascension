@@ -8,14 +8,15 @@ authors = [
 dependencies = [
     "nonebot2[fastapi,httpx]>=2.4.1",
     "nonebot-plugin-alconna>=0.54.2",
-    "aiofiles>=24.1.0",
     "nonebot-plugin-orm[aiosqlite]>=0.7.6",
     "nonebot-plugin-waiter>=0.8.0",
     "nonebot-plugin-htmlrender>=0.5.1",
-    "ruamel-yaml>=0.18.10",
     "nonebot-plugin-uninfo>=0.6.5",
+    "nonebot-plugin-user>=0.4.4",
+    "aiofiles>=24.1.0",
     "rich>=13.9.4",
     "ujson>=5.10.0",
+    "ruamel-yaml>=0.18.10",
 ]
 requires-python = ">=3.10"
 readme = "README.md"

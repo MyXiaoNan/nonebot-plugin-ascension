@@ -2,6 +2,7 @@ from nonebot import require, get_driver
 from nonebot.plugin import PluginMetadata, inherit_supported_adapters
 
 require("nonebot_plugin_orm")
+require("nonebot_plugin_user")
 require("nonebot_plugin_uninfo")
 require("nonebot_plugin_waiter")
 require("nonebot_plugin_alconna")
@@ -13,7 +14,6 @@ from .models import Sect as Sect
 from .models import User as User
 from .plugins import base as base
 from .plugins import info as info
-from .models import UserCD as UserCD
 from .configs import configs as configs
 from .models import Backpack as Backpack
 from .utils.resource import check_resource
@@ -27,7 +27,9 @@ __plugin_meta__ = PluginMetadata(
     type="application",
     homepage="https://github.com/MyXiaoNan/Marisa",
     supported_adapters=inherit_supported_adapters(
-        "nonebot_plugin_uninfo", "nonebot_plugin_alconna"
+        "nonebot_plugin_user",
+        "nonebot_plugin_uninfo",
+        "nonebot_plugin_alconna",
     ),
     extra={
         "unique_name": "Marisa",
