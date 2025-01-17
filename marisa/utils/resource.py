@@ -24,9 +24,10 @@ async def check_resource():
 
     logger.info("正在检查资源完整性")
 
+    file_count = len([f for f in DATA_DIR.iterdir() if f.is_file()])
     subfolders_count = len([f for f in DATA_DIR.iterdir() if f.is_dir()])
 
-    if subfolders_count < 4:
+    if (file_count + subfolders_count) < 11:
         logger.info("资源缺失，即刻下载")
         try:
             async with httpx.AsyncClient(timeout=10.0).stream(

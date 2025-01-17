@@ -1,0 +1,13 @@
+@font-face {
+  font-family: SarasaMonoSC-Bold;
+  src: url("assets/fonts/SarasaMonoSC-Bold.ttf");
+}
+
+body {
+  padding: 30px;
+  background-color: #FBF7EA;
+  color: #7F7A70;
+  font-family: SarasaMonoSC-Bold, sans-serif;
+}
+
+
