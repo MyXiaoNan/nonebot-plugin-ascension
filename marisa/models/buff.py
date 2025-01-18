@@ -20,6 +20,8 @@ class Buff(Model):
     """攻击力"""
     vit: Mapped[int] = mapped_column(default=240)
     """体力"""
+    exp: Mapped[int] = mapped_column(default=0)
+    """经验"""
     atk_level: Mapped[int] = mapped_column(default=0)
     """攻击修炼等级"""
     atk_buff: Mapped[int] = mapped_column(default=0)

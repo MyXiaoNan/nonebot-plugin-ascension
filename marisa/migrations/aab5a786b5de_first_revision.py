@@ -1,8 +1,8 @@
 """first revision
 
-迁移 ID: 989ba29d3182
+迁移 ID: aab5a786b5de
 父迁移:
-创建时间: 2025-01-17 23:02:31.896385
+创建时间: 2025-01-18 10:30:21.873855
 
 """
 
@@ -13,7 +13,7 @@ from collections.abc import Sequence
 import sqlalchemy as sa
 from alembic import op
 
-revision: str = "989ba29d3182"
+revision: str = "aab5a786b5de"
 down_revision: str | Sequence[str] | None = None
 branch_labels: str | Sequence[str] | None = ("marisa",)
 depends_on: str | Sequence[str] | None = None
@@ -47,7 +47,6 @@ def upgrade(name: str = "") -> None:
         sa.Column("root_type", sa.String(), nullable=False),
         sa.Column("level", sa.String(), nullable=False),
         sa.Column("stone", sa.Integer(), nullable=False),
-        sa.Column("exp", sa.Integer(), nullable=False),
         sa.Column("create_time", sa.DateTime(), nullable=False),
         sa.Column("last_check_time", sa.DateTime(), nullable=False),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_user")),
@@ -82,6 +81,7 @@ def upgrade(name: str = "") -> None:
         sa.Column("mp", sa.Integer(), nullable=False),
         sa.Column("atk", sa.Integer(), nullable=False),
         sa.Column("vit", sa.Integer(), nullable=False),
+        sa.Column("exp", sa.Integer(), nullable=False),
         sa.Column("atk_level", sa.Integer(), nullable=False),
         sa.Column("atk_buff", sa.Integer(), nullable=False),
         sa.Column("main_buff", sa.Integer(), nullable=False),

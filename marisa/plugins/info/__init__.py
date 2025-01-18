@@ -80,7 +80,9 @@ async def _(
     if user_info.level == last_level:
         level_up_status = "位面至高"
     else:
-        need_exp = jsondata.get_next_level_data(user_info.level).power - user_info.exp
+        need_exp = (
+            jsondata.get_next_level_data(user_info.level).power - user_info.buff.exp
+        )
         if need_exp > 0:
             level_up_status = f"还需 {need_exp} 修为可突破！"
         else:
@@ -147,7 +149,7 @@ async def _(
         None,
     )
 
-    exp_query = select(User.id, User.exp).order_by(User.exp.desc())
+    exp_query = select(User.id, User.buff.exp).order_by(User.buff.exp.desc())
     exp_rank = await db_session.execute(exp_query)
     user_exp_rank = next(
         (
@@ -174,7 +176,7 @@ async def _(
         "title": user_info.user_title if user_info.user_title else "暂无",
         "name": user_info.user_name,
         "level": user_info.level,
-        "exp": user_info.exp,
+        "exp": user_info.buff.exp,
         "stone": user_info.stone,
         "root": f"{user_info.root}（{user_info.root_type} + {level_rate * 100} %）",
         "level_up_status": f"{level_up_status}",

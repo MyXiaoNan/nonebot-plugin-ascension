@@ -44,8 +44,6 @@ class User(Model):
     """等级"""
     stone: Mapped[int]
     """灵石"""
-    exp: Mapped[int] = mapped_column(default=0)
-    """经验"""
     create_time: Mapped[DateTime] = mapped_column(DateTime, default=func.now())
     """创建时间"""
     last_check_time: Mapped[DateTime] = mapped_column(
