@@ -149,7 +149,7 @@ async def _(
         None,
     )
 
-    exp_query = select(User.id, User.buff.exp).order_by(User.buff.exp.desc())
+    exp_query = select(User.id, Buff.exp).join(Buff).order_by(Buff.exp.desc())
     exp_rank = await db_session.execute(exp_query)
     user_exp_rank = next(
         (
