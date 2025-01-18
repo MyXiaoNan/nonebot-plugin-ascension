@@ -1,5 +1,5 @@
-from nonebot.internal.adapter import Event
+from nonebot_plugin_user import UserSession
 
 
-def get_user_id(event: Event) -> str:
-    return event.get_user_id()
+def get_user_id(session: UserSession) -> int:
+    return session.user_id

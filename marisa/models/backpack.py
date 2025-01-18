@@ -1,6 +1,6 @@
 from nonebot_plugin_orm import Model
-from sqlalchemy import DateTime, func
 from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import DateTime, ForeignKey, func
 
 
 class Backpack(Model):
@@ -8,17 +8,19 @@ class Backpack(Model):
 
     __tablename__ = "backpack"
 
-    user_id: Mapped[str] = mapped_column(primary_key=True)
+    id: Mapped[str] = mapped_column(primary_key=True)
+
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id", ondelete="CASCADE"))
     """用户 ID"""
-    goods_id: Mapped[int]
+    item_id: Mapped[int]
     """物品 ID"""
-    goods_name: Mapped[str]
+    item_name: Mapped[str]
     """物品名称"""
-    goods_type: Mapped[str]
+    item_type: Mapped[str]
     """物品类型"""
-    goods_amount: Mapped[int]
+    item_amount: Mapped[int]
     """物品数量"""
-    bind_amount: Mapped[int] = mapped_column(default=0)
+    bundle_item_amount: Mapped[int] = mapped_column(default=0)
     """绑物数量"""
     create_time: Mapped[DateTime] = mapped_column(DateTime, default=func.now())
     """创建时间"""
