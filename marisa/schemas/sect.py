@@ -1,9 +1,10 @@
 from pydantic import BaseModel
 
 
-class SectPosition(BaseModel):
-    """宗门职务"""
+class Sect(BaseModel):
+    """宗门"""
 
-    title: str
-    speeds: str
+    position: str
+    """职位"""
     max_exp: int
+    """完成任务获取的修为上限"""
