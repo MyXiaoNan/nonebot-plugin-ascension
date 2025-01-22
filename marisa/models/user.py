@@ -3,11 +3,11 @@ from typing import TYPE_CHECKING
 from typing_extensions import Self
 
 from nonebot_plugin_orm import Model, get_session
-from sqlalchemy.orm import Mapped, relationship, mapped_column
+from sqlalchemy.orm import Mapped, relationship, selectinload, mapped_column
 from sqlalchemy import String, Boolean, DateTime, ForeignKey, and_, func, select
 
 if TYPE_CHECKING:
-    from . import Buff, Sect, Backpack
+    from . import Sect, Backpack
 
 
 class UserStatusType(Enum):
@@ -40,8 +40,10 @@ class User(Model):
     """灵根"""
     root_type: Mapped[str]
     """灵根类型"""
-    level: Mapped[str]
+    level: Mapped[int]
     """等级"""
+    exp: Mapped[int]
+    """经验"""
     stone: Mapped[int]
     """灵石"""
     create_time: Mapped[DateTime] = mapped_column(DateTime, default=func.now())
@@ -51,7 +53,6 @@ class User(Model):
     )
     """上次检查时间"""
 
-    buff: Mapped["Buff"] = relationship("Buff", back_populates=None, uselist=False)
     sect: Mapped["UserSect"] = relationship(
         "UserSect", back_populates=None, uselist=False
     )
@@ -63,13 +64,10 @@ class User(Model):
     @classmethod
     async def create_user(cls, user: Self):
         """创建用户"""
-        from . import Buff
-
         sect = UserSect(id=user.id, user_id=user.id)
         status = UserStatus(id=user.id, user_id=user.id)
-        buff = Buff(id=user.id, user_id=user.id)
 
-        objects = [user, sect, status, buff]
+        objects = [user, sect, status]
 
         session = get_session()
         async with session.begin():
@@ -80,7 +78,22 @@ class User(Model):
         """删除用户"""
         session = get_session()
         async with session.begin():
-            await session.delete(user)
+            stmt = (
+                select(cls).options(
+                    selectinload(cls.sect),
+                    selectinload(cls.backpack),
+                    selectinload(cls.status),
+                )
+            ).where(cls.id == user.id)
+            obj = (await session.execute(stmt)).scalar()
+            if obj:
+                if obj.sect:
+                    await session.delete(obj.sect)
+                if obj.status:
+                    await session.delete(obj.status)
+                for backpack_item in obj.backpack:
+                    await session.delete(backpack_item)
+                await session.delete(obj)
 
     @classmethod
     async def is_user_exist(cls, id: int, user_name: str) -> bool:

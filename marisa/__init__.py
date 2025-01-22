@@ -9,7 +9,6 @@ require("nonebot_plugin_alconna")
 require("nonebot_plugin_htmlrender")
 
 from . import migrations
-from .models import Buff as Buff
 from .models import Sect as Sect
 from .models import User as User
 from .plugins import base as base

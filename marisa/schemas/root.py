@@ -7,6 +7,6 @@ class Root(BaseModel):
     """灵根"""
 
     name: str
-    type: list[str]
-    buff: Buff
+    type: str | list[str]
     count: int
+    buff: list[Buff]

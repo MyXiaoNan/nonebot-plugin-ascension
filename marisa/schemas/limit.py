@@ -6,13 +6,15 @@ from marisa.schemas.enums import DistributionMethod
 class Limit(BaseModel):
     """物品限制"""
 
-    level: int | None
+    level: int | None = None
     """限制等级"""
-    stone: int | None
+    stone: int | None = None
     """花费灵石"""
-    cooldown: int | None
+    cooldown: int | None = None
     """冷却时间"""
-    count: int | None
+    count: int | None = None
     """使用次数"""
-    distribution: DistributionMethod = Field(DistributionMethod.all)
+    distribution: DistributionMethod | list[DistributionMethod] = Field(
+        DistributionMethod.all
+    )
     """发放途径"""

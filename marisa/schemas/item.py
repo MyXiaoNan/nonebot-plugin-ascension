@@ -1,6 +1,6 @@
 from typing import Literal, TypeAlias
 
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel, ConfigDict
 
 from marisa.schemas import Buff, Limit
 from marisa.schemas.enums import LevelType, QualityType
@@ -19,30 +19,18 @@ ItemType: TypeAlias = Literal[
 class Item(BaseModel):
     """物品"""
 
-    id: int
+    model_config = ConfigDict(extra="allow")
+
+    id: int | None = None
     name: str
     type: ItemType
 
-    level: LevelType | None
+    level: LevelType | None = None
     """等级"""
-    quality: QualityType | None
+    quality: QualityType | None = None
     """品质"""
 
-    buff: Buff | None
+    buff: list[Buff] | None = None
     """增幅"""
-    limit: Limit | None
+    limit: Limit | None = None
     """限制"""
-
-    @model_validator(mode="after")
-    def validate_equipment(self):
-        type = self.type
-        level = self.level
-        quality = self.quality
-
-        if type in ["dharma", "armor"]:
-            if level is None or quality is None:
-                raise ValueError(
-                    "level and quality must be set when type is 'dharma' or 'armor'"
-                )
-
-        return self

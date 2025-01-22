@@ -1,6 +1,37 @@
 from enum import Enum, IntEnum
 
 
+class BuffType(str, Enum):
+    """Buff 类型"""
+
+    atk = "atk"
+    """攻击力"""
+    ac = "ac"
+    """防御值"""
+    boost = "boost"
+    """倍率"""
+    cr = "cr"
+    """暴击率"""
+    crd = "crd"
+    """暴击伤害"""
+    cp = "cp"
+    """战力"""
+    dm = "dm"
+    """免伤"""
+    dr = "dr"
+    """掉落率"""
+    ew = "ew"
+    """专属武器"""
+    exp = "exp"
+    """经验值"""
+    hp = "hp"
+    """生命值"""
+    mp = "mp"
+    """真元"""
+    sp = "sp"
+    """体力"""
+
+
 class LevelType(IntEnum):
     """装备等级"""
 

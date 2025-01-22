@@ -1,32 +1,30 @@
+from typing import Literal
+
 from pydantic import Field, BaseModel
+
+from marisa.schemas.enums import BuffType
 
 
 class Buff(BaseModel):
     """增益效果"""
 
-    attack: float = Field(..., alias="atk")
-    """攻击力"""
-    armor_class: float = Field(..., alias="ac")
-    """防御值"""
-    boost: float = Field(..., alias="boost")
-    """倍率"""
-    critical_rate: float = Field(..., alias="cr")
-    """暴击率"""
-    critical_damage: float = Field(..., alias="crd")
-    """暴击伤害"""
-    combat_power: float = Field(..., alias="cp")
-    """战力"""
-    damage_mitigation: float = Field(..., alias="dm")
-    """免伤"""
-    drop_rate: float = Field(..., alias="dr")
-    """掉落率"""
-    exclusive_weapon: float = Field(..., alias="ew")
-    """专属武器"""
-    experience: float = Field(..., alias="exp")
-    """经验值"""
-    health_point: float = Field(..., alias="hp")
-    """生命值"""
-    mana_point: float = Field(..., alias="mp")
-    """真元"""
-    stamina_point: float = Field(..., alias="sp")
-    """体力"""
+    type: BuffType
+    """类型"""
+    calc: Literal["add", "mul"]
+    """
+    计算方式
+        - `add`: 加法
+        - `mul`: 乘法
+    """
+    value: float
+    """数值"""
+    duration: int = Field(-1)
+    """持续时间"""
+    state: Literal["active", "inactive"] = Field("inactive")
+    """状态"""
+
+    @property
+    def desc(self):
+        duration = f"在 {self.duration}s 内" if self.duration != -1 else ""
+        unit = "点" if self.calc == "add" else "%"
+        return duration + f"{self.type.value} + {self.value}{unit}"

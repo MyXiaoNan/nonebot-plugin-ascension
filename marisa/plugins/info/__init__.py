@@ -13,8 +13,10 @@ from nonebot_plugin_alconna import (
     FallbackStrategy,
 )
 
-from marisa.models import Buff, User
+from marisa.models import User
 from marisa.utils.jsondata import jsondata
+from marisa.utils.manager import BuffManager
+from marisa.utils.manager.backpack import BackpackManager
 
 from .render import render
 
@@ -46,14 +48,12 @@ async def _(
     else:
         name = "你"
         ident = user_session.user_id
-
     stmt = (
         select(User)
-        .options(selectinload(User.sect), selectinload(User.buff))
+        .options(selectinload(User.sect), selectinload(User.backpack))
         .where(or_(User.id == ident, User.user_name == ident))
     )
     user_info = (await db_session.execute(stmt)).scalar()
-
     if user_info is None:
         await (
             UniMessage.text(
@@ -62,7 +62,6 @@ async def _(
             .keyboard(Button("input", "我要修仙", text="/我要修仙"))
             .finish(at_sender=True, fallback=FallbackStrategy.ignore)
         )
-
     session = await get_session(bot, event)
     if session is None:
         return
@@ -74,60 +73,41 @@ async def _(
     )
 
     # Level Up Info
-    level_rate = jsondata.get_level_data(user_info.level).spend
-    last_level = jsondata.get_level_data("-1")
-
+    level_rate = jsondata.get_level_up_probability(user_info.level)
+    last_level = list(jsondata._get_level_data().keys())[-1]
     if user_info.level == last_level:
         level_up_status = "位面至高"
     else:
-        need_exp = (
-            jsondata.get_next_level_data(user_info.level).power - user_info.buff.exp
-        )
+        need_exp = jsondata.get_level_exp(user_info.level + 1) - user_info.exp
         if need_exp > 0:
             level_up_status = f"还需 {need_exp} 修为可突破！"
         else:
             level_up_status = "即刻突破！"
 
     # Buff Info
-    buff_info = await db_session.get(Buff, user_info.id)
-    if buff_info is None:
-        mainbuff_name = subuff_name = secbuff_name = dharma_name = armor_name = "无"
-    else:
-        mainbuff_name = (
-            f"""
-            {jsondata.get_mainbuff_data(buff_info.main_buff).name}（{jsondata.get_mainbuff_data(buff_info.main_buff).level}）
-            """
-            if buff_info.main_buff != 0
-            else "无"
-        )
-        subuff_name = (
-            f"""
-            {jsondata.get_subuff_data(buff_info.sub_buff).name}（{jsondata.get_subuff_data(buff_info.sub_buff).level}）
-            """
-            if buff_info.sub_buff != 0
-            else "无"
-        )
-        secbuff_name = (
-            f"""
-            {jsondata.get_secbuff_data(buff_info.sec_buff).name}（{jsondata.get_secbuff_data(buff_info.sec_buff).level}）
-            """
-            if buff_info.sec_buff != 0
-            else "无"
-        )
-        dharma_name = (
-            f"""
-            {jsondata.get_dharma_data(buff_info.dharma).name}（{jsondata.get_dharma_data(buff_info.dharma).level}）
-            """
-            if buff_info.dharma != 0
-            else "无"
-        )
-        armor_name = (
-            f"""
-            {jsondata.get_armor_data(buff_info.armor).name}（{jsondata.get_armor_data(buff_info.armor).level}）
-            """
-            if buff_info.armor != 0
-            else "无"
-        )
+    buff = BuffManager(user_info)
+
+    # Backpack
+    backpack = BackpackManager(user_info)
+    main_tech = backpack.filter(
+        lambda item: item.type == "main_tech"
+        and bool(item.model_dump().get("is_equipped"))
+    )
+    second_tech = backpack.filter(
+        lambda item: item.type == "second_tech"
+        and bool(item.model_dump().get("is_equipped"))
+    )
+    divine_tech = backpack.filter(
+        lambda item: item.type == "divine_tech"
+        and bool(item.model_dump().get("is_equipped"))
+    )
+    dharma = backpack.filter(
+        lambda item: item.type == "dharma"
+        and bool(item.model_dump().get("is_equipped"))
+    )
+    armor = backpack.filter(
+        lambda item: item.type == "armor" and bool(item.model_dump().get("is_equipped"))
+    )
 
     # Sect Info
     sect_id = user_info.sect.sect_id
@@ -148,8 +128,7 @@ async def _(
         ),
         None,
     )
-
-    exp_query = select(User.id, Buff.exp).join(Buff).order_by(Buff.exp.desc())
+    exp_query = select(User.id, User.exp).order_by(User.exp.desc())
     exp_rank = await db_session.execute(exp_query)
     user_exp_rank = next(
         (
@@ -159,7 +138,6 @@ async def _(
         ),
         None,
     )
-
     stone_query = select(User.id, User.stone).order_by(User.stone.desc())
     stone_rank = await db_session.execute(stone_query)
     user_stone_rank = next(
@@ -170,29 +148,27 @@ async def _(
         ),
         None,
     )
-
     info_map = {
         "avatar": user_avatar,
         "title": user_info.user_title if user_info.user_title else "暂无",
         "name": user_info.user_name,
         "level": user_info.level,
-        "exp": user_info.buff.exp,
+        "exp": user_info.exp,
         "stone": user_info.stone,
         "root": f"{user_info.root}（{user_info.root_type} + {level_rate * 100} %）",
         "level_up_status": f"{level_up_status}",
-        "mainbuff": mainbuff_name,
-        "secbuff": secbuff_name,
-        "subuff": subuff_name,
-        "atk": f"{user_info.buff.atk}，攻修等级：{user_info.buff.atk_level} 级",
-        "dharma": dharma_name,
-        "armor": armor_name,
+        "mainbuff": main_tech[0].name if main_tech else "无",
+        "secbuff": second_tech[0].name if second_tech else "无",
+        "subuff": divine_tech[0].name if divine_tech else "无",
+        "atk": f"{buff.atk}",
+        "dharma": dharma[0].name if dharma else "无",
+        "armor": armor[0].name if armor else "无",
         "sect_name": sect_name,
         "sect_position": sect_position,
         "register_rank": f"道友是踏入修仙世界的第 {user_register_rank} 人",
         "exp_rank": f"第 {user_exp_rank} 名",
         "stone_rank": f"第 {user_stone_rank} 名",
     }
-
     img = await render(info_map)
     await db_session.commit()
     await UniMessage.image(raw=img).finish(at_sender=True)
