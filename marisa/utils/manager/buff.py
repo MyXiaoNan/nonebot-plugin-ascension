@@ -12,7 +12,3 @@ class BuffManager(Generic[T]):
     @property
     def atk(self) -> float:
         return self.user.exp * 0.1
-
-    @property
-    def atk_level(self) -> int:
-        return self.user.level

@@ -160,7 +160,7 @@ async def _(
         "mainbuff": main_tech[0].name if main_tech else "无",
         "secbuff": second_tech[0].name if second_tech else "无",
         "subuff": divine_tech[0].name if divine_tech else "无",
-        "atk": f"{buff.atk}",
+        "atk": str(buff.atk),
         "dharma": dharma[0].name if dharma else "无",
         "armor": armor[0].name if armor else "无",
         "sect_name": sect_name,
