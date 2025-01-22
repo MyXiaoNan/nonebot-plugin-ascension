@@ -3,7 +3,7 @@ from pathlib import Path
 
 import ujson as json
 
-from marisa.schemas.buff import Buff
+from marisa.schemas import Buff
 
 from ..schemas import Root, BuffType
 from ..configs import DATA_DIR, config

@@ -2,7 +2,8 @@ from typing import Literal, TypeAlias
 
 from pydantic import BaseModel, ConfigDict
 
-from marisa.schemas import Buff, Limit
+from marisa.schemas.buff import Buff
+from marisa.schemas.limit import Limit
 from marisa.schemas.enums import LevelType, QualityType
 
 ItemType: TypeAlias = Literal[
