@@ -1,0 +1,59 @@
+{% macro section(context) %}
+<style>
+section {
+  height: 129.5px;
+  border-radius: 7px;
+  opacity: 1;
+
+  padding: 14px;
+  gap: 0px 10px;
+
+  display: flex;
+  flex-direction: column;
+  align-content: flex-start;
+  justify-content: space-around;
+
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.001), rgba(0, 0, 0, 0.001)), #FFFFFF;
+  box-shadow: 0px 10px 15px -3px rgba(0, 0, 0, 0.1), 0px 4px 6px -4px rgba(0, 0, 0, 0.1);
+  ;
+}
+
+section h1 {
+  --tw-text-opacity: 1;
+
+  font-family: roboto;
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  color: rgb(88 28 135 / var(--tw-text-opacity));
+}
+
+section h2 {
+  --tw-text-opacity: 1;
+
+  font-family: roboto;
+  font-weight: 400;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: rgb(126 34 206 / var(--tw-text-opacity))
+}
+
+section p {
+  font-family: roboto;
+  font-size: 12.25px;
+  font-weight: normal;
+  line-height: 17.5px;
+}
+</style>
+<section>
+  <h1>{{ context.metadata["title"] }}</h1>
+  <div class="space-y-1">
+    {% for field in context.__dataclass_fields__.values() %}
+      <div class="flex justify-between">
+        <h2>{{ field.metadata["title"] }}：</h2>
+        <p>{{ context.get_field_content(field.name) }}</p>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endmacro %}
