@@ -1,0 +1,22 @@
+{% from "icons/coin.html.jinja" import coin %}
+{% from "icons/level.html.jinja" import level %}
+
+{% macro header(context) %}
+<header class="flex items-center gap-4">
+  <img class="w-12 h-12 rounded-full" src="{{ context.avatar }}" alt="avatar"/>
+  <div>
+    <h1 class="text-[#581C87] text-lg font-semibold">{{ context.name }}</h1>
+    <div class="flex items-center gap-2">
+      <span class="flex items-center gap-1">
+        {{ coin() }}
+        <p class="text-[#9333EA] text-sm font-medium">{{ context.stone }}</p>
+      </span>
+
+      <span class="flex items-center gap-1">
+        {{ level() }}
+        <p class="text-[#9333EA] text-sm font-medium">{{ context.level }}</p>
+      </span>
+    </div>
+  </div>
+</header>
+{% endmacro %}

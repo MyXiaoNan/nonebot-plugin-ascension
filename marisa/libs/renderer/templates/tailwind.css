@@ -1,0 +1,55 @@
+@layer base {
+  @font-face {
+    font-family: 'roboto';
+    src: url('assets/fonts/Roboto-Thin.ttf');
+    font-weight: 100
+  }
+
+  @font-face {
+    font-family: 'roboto';
+    src: url('assets/fonts/Roboto-ExtraLight.ttf');
+    font-weight: 200
+  }
+
+  @font-face {
+    font-family: 'roboto';
+    src: url('assets/fonts/Roboto-Light.ttf');
+    font-weight: 300
+  }
+
+  @font-face {
+    font-family: 'roboto';
+    src: url('assets/fonts/Roboto-Regular.ttf');
+    font-weight: 400
+  }
+
+  @font-face {
+    font-family: 'roboto';
+    src: url('assets/fonts/Roboto-Medium.ttf');
+    font-weight: 500
+  }
+
+  @font-face {
+    font-family: 'roboto';
+    src: url('assets/fonts/Roboto-SemiBold.ttf');
+    font-weight: 600
+  }
+
+  @font-face {
+    font-family: 'roboto';
+    src: url('assets/fonts/Roboto-Bold.ttf');
+    font-weight: 700
+  }
+
+  @font-face {
+    font-family: 'roboto';
+    src: url('assets/fonts/Roboto-ExtraBold.ttf');
+    font-weight: 800
+  }
+
+  @font-face {
+    font-family: 'roboto';
+    src: url('assets/fonts/Roboto-Black.ttf');
+    font-weight: 900
+  }
+}
