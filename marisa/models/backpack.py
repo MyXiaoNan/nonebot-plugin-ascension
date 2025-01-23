@@ -16,12 +16,10 @@ class Backpack(Model):
     """物品 ID"""
     item_name: Mapped[str]
     """物品名称"""
-    item_type: Mapped[str]
-    """物品类型"""
-    item_amount: Mapped[int]
-    """物品数量"""
-    bundle_item_amount: Mapped[int] = mapped_column(default=0)
-    """绑物数量"""
+    is_bundle: Mapped[bool]
+    """是否为绑物"""
+    is_equipped: Mapped[bool] = mapped_column(default=False)
+    """是否装备"""
     create_time: Mapped[DateTime] = mapped_column(DateTime, default=func.now())
     """创建时间"""
     update_time: Mapped[DateTime] = mapped_column(

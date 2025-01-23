@@ -1,4 +1,5 @@
 import random
+from typing import Literal
 
 from nonebot_plugin_uninfo import Uninfo
 from nonebot_plugin_waiter import waiter
@@ -9,7 +10,6 @@ from nonebot_plugin_orm import async_scoped_session
 from nonebot_plugin_alconna import Match, Button, Command, UniMessage, FallbackStrategy
 
 from ..models import User
-from ..schemas import Root
 from ..configs import config
 from ..utils.jsondata import jsondata
 from ..utils.annotated import UserInfo
@@ -25,18 +25,23 @@ level_up = Command("突破").build(use_cmd_start=True)
 async def _(session: Uninfo, user_session: UserSession):
     user_name = session.user.name or "无名客"
 
-    root_data = jsondata.get_all_root_data()
-    root, root_type = jsondata.select_root()
-    power: int = int(100 * float(Root.model_validate(root_data[root_type]).speeds))
+    root = jsondata.select_root()
+    exp_buff = next(
+        (buff.value for buff in root.buff if buff.type.value == "exp"), None
+    )
+    exp: float | Literal[0] = 100 * exp_buff if exp_buff else 0
 
     user = User(
         id=user_session.user.id,
         user_name=user_name,
-        root=root,
-        root_type=root_type,
-        level="江湖好手",
+        root=root.name,
+        root_type=root.type,
+        level=1,
+        exp=exp,
         stone=0,
     )
+
+    level_name = jsondata.get_level_name(1)
 
     if not await User.is_user_exist(user.id, user_name):
         try:
@@ -62,7 +67,7 @@ async def _(session: Uninfo, user_session: UserSession):
             await User.create_user(user)
 
         await UniMessage(
-            f"欢迎来到修真界。你的灵根为：{root}，类型是：{root_type}。你的战力为：{power}。当前境界：江湖好手"
+            f"欢迎来到修真界。你的灵根为：{root.name}，类型是：{root.type}。你的战力为：{exp}。当前境界：{level_name}"
         ).finish(at_sender=True)
     await (
         UniMessage.text("你已迈入修仙世界，输入 『 /我的修仙信息 』查看信息吧")
@@ -72,28 +77,32 @@ async def _(session: Uninfo, user_session: UserSession):
 
 
 @rebirth_ascension.handle()
-async def _(user_info: UserInfo, session: async_scoped_session):
+async def _(user_info: UserInfo):
     if user_info.stone < config.rebirth.cost:
         await UniMessage("你的灵石还不够呢，快去赚点灵石吧！").finish(at_sender=True)
 
-    root_data = jsondata.get_all_root_data()
-    root, root_type = jsondata.select_root()
-    power: int = int(100 * float(root_data[root_type].speeds))
+    root = jsondata.select_root()
+    exp_buff = next(
+        (buff.value for buff in root.buff if buff.type.value == "exp"), None
+    )
+    exp: float | Literal[0] = 100 * exp_buff if exp_buff else 0
 
     user = User(
         id=user_info.id,
         user_name=user_info.user_name,
-        root=root,
-        root_type=root_type,
-        level="江湖好手",
+        root=root.name,
+        root_type=root.type,
+        level=1,
+        exp=exp,
         stone=0,
     )
 
+    level_name = jsondata.get_level_name(1)
+
     await User.delete_user(user_info)
     await User.create_user(user)
-    await session.commit()
     await UniMessage(
-        f"欢迎来到修真界。你的灵根为：{root}，类型是：{root_type}。你的战力为：{power}。当前境界：江湖好手"
+        f"欢迎来到修真界。你的灵根为：{root.name}，类型是：{root.type}。你的战力为：{exp}。当前境界：{level_name}"
     ).finish(at_sender=True)
 
 

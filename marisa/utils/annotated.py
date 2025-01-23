@@ -14,7 +14,6 @@ UserInfo = Annotated[
         select(_User)
         .options(
             selectinload(_User.sect),
-            selectinload(_User.buff),
             selectinload(_User.backpack),
             selectinload(_User.status),
         )

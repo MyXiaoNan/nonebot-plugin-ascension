@@ -1,127 +1,70 @@
 import random
-from typing import Any
 from pathlib import Path
 
 import ujson as json
 
-from ..configs import DATA_DIR
-from ..schemas import (
-    Root,
-    SecBuff,
-    SubBuff,
-    MainBuff,
-    ArmorBuff,
-    LevelInfo,
-    DharmaBuff,
-    SectPosition,
-)
+from marisa.schemas import Buff
+
+from ..schemas import Root, BuffType
+from ..configs import DATA_DIR, config
 
 
 class JsonData:
     """Ascension Json Data"""
 
-    def __init__(self):
-        self.root_path: Path = DATA_DIR / "灵根.json"
-        self.level_path: Path = DATA_DIR / "境界.json"
-        self.sect_path: Path = DATA_DIR / "宗门.json"
-        self.level_up_rate_path: Path = DATA_DIR / "突破概率.json"
-        self.mainbuff_path: Path = DATA_DIR / "功法" / "主功法.json"
-        self.subuff_path: Path = DATA_DIR / "功法" / "辅修功法.json"
-        self.secbuff_path: Path = DATA_DIR / "功法" / "神通.json"
-        self.dharma_path: Path = DATA_DIR / "装备" / "法器.json"
-        self.armor_path: Path = DATA_DIR / "装备" / "防具.json"
+    def __init__(self) -> None:
+        self.root_path: Path = DATA_DIR / "root.json"
+        self.level_path: Path = DATA_DIR / "level" / f"{config.level_up.theme}.json"
+        self.sect_path: Path = DATA_DIR / "sect.json"
 
-    def _get_level_data(self) -> dict[str, LevelInfo]:
+    def _get_level_data(self) -> dict[str, str]:
         """获取境界数据"""
         return json.loads(self.level_path.read_text("utf-8"))
 
-    def _get_sect_data(self) -> dict[str, SectPosition]:
-        """获取宗门数据"""
-        return json.loads(self.sect_path.read_text("utf-8"))
-
-    def get_level_data(self, level: str) -> LevelInfo:
-        """
-        获取境界数据
-        参数：
-            level: 境界（若填入 `-1`，则返回最后一个境界信息）
-        """
-        if level == "-1":
-            all_level_name: list = list(self._get_level_data().keys())
-            last_level_name: str = all_level_name[-1]
-            return LevelInfo.model_validate(self._get_level_data()[last_level_name])
-        return LevelInfo.model_validate(self._get_level_data()[level])
-
-    def get_next_level_data(self, level: str) -> LevelInfo:
-        """获取用户下一境界数据"""
-        all_level_name = list(self._get_level_data().keys())
-        level_index = all_level_name.index(level)
-        return LevelInfo.model_validate(
-            self.get_level_data(all_level_name[level_index + 1])
-        )
-
-    def get_all_root_data(self) -> dict[str, Root]:
+    def _get_all_root_data(self) -> list[Root]:
         """获取全部灵根数据"""
-        return json.loads(self.root_path.read_text("utf-8"))
+        data = json.loads(self.root_path.read_text("utf-8"))["root"]
+        return [Root(**root) for root in data]
+
+    def get_level_name(self, level: int) -> str:
+        """获取对应境界名称"""
+        return self._get_level_data()[str(level)]
+
+    def get_level_exp(self, level: int) -> int:
+        """获取对应境界所需经验"""
+        cfg = config.level_up
+        return round(int(cfg.base_exp * (cfg.cardinality**level)) / 10) * 10
+
+    def get_level_up_probability(self, level: int) -> float:
+        """获取对应境界突破概率"""
+        return max(0, 100 - 2 * level)
 
     def get_root_data(self, name: str) -> Root:
         """获取灵根数据"""
-        return Root.model_validate(self.get_all_root_data()[name])
+        roots: list[Root] = self._get_all_root_data()
+        return list(filter(lambda root: root.name == name, roots))[0]
 
-    def get_mainbuff_data(self, key: str | int) -> MainBuff:
-        """获取功法数据"""
-        return MainBuff.model_validate(
-            json.loads(self.mainbuff_path.read_text("utf-8"))[str(key)]
-        )
-
-    def get_secbuff_data(self, key: str | int) -> SecBuff:
-        """获取神通数据"""
-        return SecBuff.model_validate(
-            json.loads(self.secbuff_path.read_text("utf-8"))[str(key)]
-        )
-
-    def get_subuff_data(self, key: str | int) -> SubBuff:
-        """获取辅修数据"""
-        return SubBuff.model_validate(
-            json.loads(self.subuff_path.read_text("utf-8"))[str(key)]
-        )
-
-    def get_dharma_data(self, key: str | int) -> DharmaBuff:
-        """获取法器数据"""
-        return DharmaBuff.model_validate(
-            json.loads(self.dharma_path.read_text("utf-8"))[str(key)]
-        )
-
-    def get_armor_data(self, key: str | int) -> ArmorBuff:
-        """获取防具数据"""
-        return ArmorBuff.model_validate(
-            json.loads(self.armor_path.read_text("utf-8"))[str(key)]
-        )
-
-    def select_root(self) -> tuple[str, str]:
-        data = self.get_all_root_data()
-        root_types: list[str] = list(data.keys())
-        root_rate = [
-            Root.model_validate(data[root_type]).rate for root_type in root_types
+    def select_root(self) -> Root:
+        """随机选择灵根"""
+        roots: list[Root] = self._get_all_root_data()
+        roots_with_dr: list[Root] = [
+            root
+            for root in roots
+            if any(buff.type == BuffType.dr for buff in root.buff)
         ]
 
-        select_root_type: str = random.choices(root_types, weights=root_rate, k=1)[0]
-        select_root: str = random.choice(
-            Root.model_validate(data[select_root_type]).type_list
-        )
+        weighted_roots = []
+        for root in roots_with_dr:
+            dr_buff: Buff = next(buff for buff in root.buff if buff.type == BuffType.dr)
+            weight: float = dr_buff.value
+            weighted_roots.extend([root] * int(weight * 10))
 
-        return select_root, select_root_type
+        chosen_root: Root = random.choice(weighted_roots)
+        chosen_type: str = random.choice(chosen_root.type)
 
-    def _get_level_up_rate_data(self) -> dict[str, Any]:
-        """获取境界突破概率数据"""
-        return json.loads(self.level_up_rate_path.read_text("utf-8"))
+        chosen_root.type = chosen_type
 
-    def get_user_level_up_rate(self, level) -> str:
-        """
-        获取用户突破概率
-        参数:
-            level: 当前等级
-        """
-        return self._get_level_up_rate_data()[level]
+        return chosen_root
 
 
 jsondata = JsonData()
